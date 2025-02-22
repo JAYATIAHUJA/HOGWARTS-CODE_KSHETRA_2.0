@@ -1,0 +1,167 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Login - Handicraft Market{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-box">
+        <h1 class="auth-title">Welcome Back</h1>
+        <p class="auth-subtitle">Sign in to your account</p>
+        
+        <form method="post" class="auth-form">
+            {% csrf_token %}
+            
+            {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                <div class="message {{ message.tags }}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            
+            <div class="form-group">
+                <label for="username" class="form-label">Username</label>
+                <input type="text" id="username" name="username" class="form-input" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="password" class="form-label">Password</label>
+                <input type="password" id="password" name="password" class="form-input" required>
+            </div>
+            
+            <div class="form-group form-actions">
+                <button type="submit" class="btn btn-primary btn-block">Sign In</button>
+            </div>
+            
+            <div class="auth-links">
+                <a href="{% url 'accounts:register' %}" class="auth-link">Don't have an account? Register</a>
+                <a href="#" class="auth-link">Forgot Password?</a>
+            </div>
+        </form>
+        
+        <div class="auth-separator">
+            <span>OR</span>
+        </div>
+        
+        <div class="seller-cta">
+            <h2>Are you an Artisan?</h2>
+            <p>Start selling your handicrafts today!</p>
+            <a href="{% url 'accounts:register_seller' %}" class="btn btn-secondary btn-block">Register as Seller</a>
+        </div>
+    </div>
+</div>
+
+<style>
+    .auth-container {
+        min-height: calc(100vh - 200px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+    }
+    
+    .auth-box {
+        background-color: var(--surface-color);
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        padding: 2rem;
+        width: 100%;
+        max-width: 400px;
+    }
+    
+    .auth-title {
+        font-size: 2rem;
+        color: var(--primary-color);
+        margin-bottom: 0.5rem;
+        text-align: center;
+    }
+    
+    .auth-subtitle {
+        color: var(--text-secondary);
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+    
+    .auth-form {
+        margin-bottom: 2rem;
+    }
+    
+    .form-actions {
+        margin-top: 2rem;
+    }
+    
+    .btn-block {
+        width: 100%;
+    }
+    
+    .auth-links {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 1rem;
+        font-size: 0.9rem;
+    }
+    
+    .auth-link {
+        color: var(--accent-color);
+        text-decoration: none;
+    }
+    
+    .auth-link:hover {
+        text-decoration: underline;
+    }
+    
+    .auth-separator {
+        display: flex;
+        align-items: center;
+        text-align: center;
+        margin: 2rem 0;
+    }
+    
+    .auth-separator::before,
+    .auth-separator::after {
+        content: '';
+        flex: 1;
+        border-bottom: 1px solid var(--border-color);
+    }
+    
+    .auth-separator span {
+        padding: 0 1rem;
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+    }
+    
+    .seller-cta {
+        text-align: center;
+        padding-top: 1rem;
+    }
+    
+    .seller-cta h2 {
+        font-size: 1.2rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .seller-cta p {
+        color: var(--text-secondary);
+        margin-bottom: 1rem;
+    }
+    
+    @media (max-width: 480px) {
+        .auth-container {
+            padding: 1rem;
+        }
+        
+        .auth-box {
+            padding: 1.5rem;
+        }
+        
+        .auth-links {
+            flex-direction: column;
+            gap: 1rem;
+            text-align: center;
+        }
+    }
+</style>
+{% endblock %} 

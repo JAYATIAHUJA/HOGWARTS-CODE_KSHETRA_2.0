@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ product.name }} - Handicraft Market{% endblock %}
+
+{% block content %}
+<div class="product-detail-container">
+    <div class="product-images">
+        <div class="main-image">
+            <img src="{{ product.main_image.url }}" alt="{{ product.name }}">
+        </div>
+        {% if product.additional_images.all %}
+        <div class="thumbnail-images">
+            {% for image in product.additional_images.all %}
+            <img src="{{ image.image.url }}" alt="{{ product.name }} - Image {{ forloop.counter }}" 
+                 onclick="updateMainImage(this.src)">
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="product-info">
+        <h1>{{ product.name }}</h1>
+        <div class="product-meta">
+            <span class="category">{{ product.category.name }}</span>
+            <span class="seller">by {{ product.seller.business_name }}</span>
+        </div>
+
+        <div class="product-price">
+            <span class="current-price">${{ product.price }}</span>
+            {% if product.compare_price %}
+            <span class="compare-price">${{ product.compare_price }}</span>
+            <span class="discount">
+                {{ product.discount_percentage }}% OFF
+            </span>
+            {% endif %}
+        </div>
+
+        <div class="stock-status {% if product.stock > 0 %}in-stock{% else %}out-of-stock{% endif %}">
+            {% if product.stock > 0 %}
+            <i class="fas fa-check-circle"></i> In Stock ({{ product.stock }} available)
+            {% else %}
+            <i class="fas fa-times-circle"></i> Out of Stock
+            {% endif %}
+        </div>
+
+        {% if product.stock > 0 %}
+        <div class="product-actions">
+            <button class="btn btn-primary add-to-cart-btn" 
+                    data-product-id="{{ product.id }}"
+                    {% if not user.is_authenticated %}
+                    onclick="window.location.href='{% url 'login' %}?next={{ request.path }}'"
+                    {% endif %}>
+                <i class="fas fa-shopping-cart"></i> Add to Cart
+            </button>
+            <button class="btn btn-outline wishlist-btn" data-product-id="{{ product.id }}">
+                <i class="far fa-heart"></i> Add to Wishlist
+            </button>
+        </div>
+        {% endif %}
+
+        <div class="product-description">
+            <h2>Description</h2>
+            {{ product.description|linebreaks }}
+        </div>
+
+        <div class="product-details">
+            <h2>Product Details</h2>
+            <ul>
+                <li><strong>Material:</strong> {{ product.material }}</li>
+                <li><strong>Dimensions:</strong> {{ product.dimensions }}</li>
+                <li><strong>Weight:</strong> {{ product.weight }}</li>
+                {% if product.customization_available %}
+                <li><strong>Customization:</strong> Available</li>
+                {% endif %}
+            </ul>
+        </div>
+
+        {% if product.shipping_info %}
+        <div class="shipping-info">
+            <h2>Shipping Information</h2>
+            {{ product.shipping_info|linebreaks }}
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+{% if related_products %}
+<div class="related-products">
+    <h2>You May Also Like</h2>
+    <div class="products-grid">
+        {% for related_product in related_products %}
+        <div class="product-card">
+            <a href="{{ related_product.get_absolute_url }}">
+                <img src="{{ related_product.main_image.url }}" alt="{{ related_product.name }}">
+                <h3>{{ related_product.name }}</h3>
+                <p class="price">${{ related_product.price }}</p>
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function updateMainImage(src) {
+    document.querySelector('.main-image img').src = src;
+}
+</script>
+{% endblock %} 

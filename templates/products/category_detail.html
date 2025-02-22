@@ -1,0 +1,296 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ category.name }} - Handicraft Market{% endblock %}
+
+{% block content %}
+<div class="category-detail-container">
+    <!-- Category Header -->
+    <div class="category-header">
+        <div class="category-info">
+            <h1>{{ category.name }}</h1>
+            <p>{{ category.description }}</p>
+        </div>
+    </div>
+
+    <!-- Products Grid -->
+    <div class="products-section">
+        <div class="products-grid">
+            {% for product in products %}
+            <div class="product-card">
+                <div class="product-image">
+                    {% if product.images.exists %}
+                    <img src="{{ product.images.first.image.url }}" alt="{{ product.name }}">
+                    {% else %}
+                    <img src="{% static 'images/placeholder.jpg' %}" alt="Product placeholder">
+                    {% endif %}
+                    <div class="product-overlay">
+                        <a href="{% url 'products:product_detail' product.slug %}" class="view-details">View Details</a>
+                    </div>
+                </div>
+                <div class="product-info">
+                    <h3>{{ product.name }}</h3>
+                    <div class="product-meta">
+                        <span class="product-price">₹{{ product.price|floatformat:2 }}</span>
+                        {% if product.is_available %}
+                        <span class="stock-status in-stock">In Stock</span>
+                        {% else %}
+                        <span class="stock-status out-stock">Out of Stock</span>
+                        {% endif %}
+                    </div>
+                    <p class="product-description">{{ product.description|truncatechars:100 }}</p>
+                    <div class="product-actions">
+                        <a href="{% url 'products:product_detail' product.slug %}" class="btn-primary">
+                            View Details
+                        </a>
+                        {% if product.is_available %}
+                        <button class="btn-secondary add-to-cart" data-product-id="{{ product.id }}">
+                            Add to Cart
+                        </button>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="no-products">
+                <i class="fas fa-box-open"></i>
+                <p>No products available in this category yet.</p>
+                <a href="{% url 'products:category_list' %}" class="btn-primary">Browse Other Categories</a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<style>
+    .category-detail-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+
+    .category-header {
+        text-align: center;
+        margin-bottom: 3rem;
+        padding: 2rem;
+        background: var(--surface-color);
+        border-radius: 12px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .category-header h1 {
+        font-family: var(--font-heading);
+        color: var(--text-primary);
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .category-header p {
+        color: var(--text-secondary);
+        font-size: 1.1rem;
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .products-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 2rem;
+    }
+
+    .product-card {
+        background: var(--surface-color);
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease;
+    }
+
+    .product-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .product-image {
+        position: relative;
+        height: 250px;
+        overflow: hidden;
+    }
+
+    .product-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+
+    .product-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .product-card:hover .product-overlay {
+        opacity: 1;
+    }
+
+    .view-details {
+        color: white;
+        text-decoration: none;
+        padding: 0.5rem 1rem;
+        border: 2px solid white;
+        border-radius: 4px;
+        transition: all 0.3s ease;
+    }
+
+    .view-details:hover {
+        background: white;
+        color: var(--primary-color);
+    }
+
+    .product-info {
+        padding: 1.5rem;
+    }
+
+    .product-info h3 {
+        color: var(--text-primary);
+        font-size: 1.2rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .product-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+
+    .product-price {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--primary-color);
+    }
+
+    .stock-status {
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        font-size: 0.9rem;
+    }
+
+    .in-stock {
+        background: #dcfce7;
+        color: #166534;
+    }
+
+    .out-stock {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+
+    .product-description {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+        line-height: 1.5;
+    }
+
+    .product-actions {
+        display: flex;
+        gap: 1rem;
+    }
+
+    .btn-primary, .btn-secondary {
+        flex: 1;
+        padding: 0.75rem;
+        border: none;
+        border-radius: 6px;
+        font-weight: 500;
+        text-align: center;
+        text-decoration: none;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .btn-primary {
+        background: var(--primary-color);
+        color: white;
+    }
+
+    .btn-secondary {
+        background: var(--surface-color);
+        border: 1px solid var(--primary-color);
+        color: var(--primary-color);
+    }
+
+    .btn-primary:hover {
+        background: var(--accent-color);
+    }
+
+    .btn-secondary:hover {
+        background: var(--primary-color);
+        color: white;
+    }
+
+    .no-products {
+        grid-column: 1 / -1;
+        text-align: center;
+        padding: 4rem;
+        background: var(--surface-color);
+        border-radius: 12px;
+    }
+
+    .no-products i {
+        font-size: 3rem;
+        color: var(--text-secondary);
+        margin-bottom: 1rem;
+    }
+
+    .no-products p {
+        color: var(--text-secondary);
+        margin-bottom: 1.5rem;
+    }
+
+    @media (max-width: 992px) {
+        .products-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @media (max-width: 768px) {
+        .category-detail-container {
+            padding: 1rem;
+        }
+
+        .category-header {
+            padding: 1.5rem;
+        }
+
+        .category-header h1 {
+            font-size: 2rem;
+        }
+
+        .products-grid {
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+    }
+</style>
+
+<script>
+    // Add to cart functionality
+    document.querySelectorAll('.add-to-cart').forEach(button => {
+        button.addEventListener('click', function() {
+            const productId = this.dataset.productId;
+            // Add your cart functionality here
+            console.log(`Adding product ${productId} to cart`);
+        });
+    });
+</script>
+{% endblock %} 

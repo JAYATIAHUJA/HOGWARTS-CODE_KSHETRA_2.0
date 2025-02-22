@@ -1,0 +1,242 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}About Us - Handicraft Market{% endblock %}
+
+{% block content %}
+<div class="about-container">
+    <!-- Hero Section -->
+    <section class="about-hero">
+        <div class="hero-content">
+            <h1>About Handicraft Market</h1>
+            <p>Connecting artisans with art lovers worldwide</p>
+        </div>
+    </section>
+
+    <!-- Mission Section -->
+    <section class="mission-section">
+        <div class="section-content">
+            <h2>Our Mission</h2>
+            <p>At Handicraft Market, we're dedicated to preserving and promoting traditional craftsmanship while empowering artisans to reach a global audience. Our platform bridges the gap between skilled craftspeople and art enthusiasts, ensuring fair compensation for artisans and authentic handcrafted products for customers.</p>
+        </div>
+    </section>
+
+    <!-- Values Section -->
+    <section class="values-section">
+        <h2>Our Values</h2>
+        <div class="values-grid">
+            <div class="value-card">
+                <div class="value-icon">🤝</div>
+                <h3>Authenticity</h3>
+                <p>We ensure every product is genuinely handcrafted by verified artisans.</p>
+            </div>
+            <div class="value-card">
+                <div class="value-icon">💫</div>
+                <h3>Quality</h3>
+                <p>Each item undergoes careful quality checks to meet our high standards.</p>
+            </div>
+            <div class="value-card">
+                <div class="value-icon">♻️</div>
+                <h3>Sustainability</h3>
+                <p>We promote eco-friendly practices and sustainable crafting methods.</p>
+            </div>
+            <div class="value-card">
+                <div class="value-icon">🌍</div>
+                <h3>Community</h3>
+                <p>Building a global community of artisans and art lovers.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Impact Section -->
+    <section class="impact-section">
+        <div class="section-content">
+            <h2>Our Impact</h2>
+            <div class="impact-stats">
+                <div class="stat-card">
+                    <div class="stat-number">1000+</div>
+                    <div class="stat-label">Artisans Empowered</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">50+</div>
+                    <div class="stat-label">Countries Reached</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">10000+</div>
+                    <div class="stat-label">Products Sold</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Team Section -->
+    <section class="team-section">
+        <div class="section-content">
+            <h2>Our Team</h2>
+            <p>We're a passionate team of individuals committed to preserving traditional crafts and empowering artisans worldwide. Our diverse team brings together expertise in technology, design, and traditional craftsmanship.</p>
+            <div class="cta-box">
+                <h3>Join Our Journey</h3>
+                <p>Are you passionate about handicrafts? Join us in our mission to preserve and promote traditional craftsmanship.</p>
+                <div class="cta-buttons">
+                    <a href="{% url 'accounts:register_seller' %}" class="btn btn-primary">Become a Seller</a>
+                    <a href="{% url 'core:contact' %}" class="btn btn-secondary">Contact Us</a>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<style>
+    .about-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 1rem;
+    }
+
+    .about-hero {
+        text-align: center;
+        padding: 4rem 2rem;
+        margin: 2rem 0;
+        background-color: var(--surface-color);
+        border-radius: 8px;
+        box-shadow: 0 2px 4px var(--shadow-color);
+    }
+
+    .about-hero h1 {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        color: var(--text-primary);
+    }
+
+    .about-hero p {
+        font-size: 1.2rem;
+        color: var(--text-secondary);
+    }
+
+    .section-content {
+        margin: 4rem 0;
+        text-align: center;
+    }
+
+    .section-content h2 {
+        font-size: 2rem;
+        margin-bottom: 1.5rem;
+        color: var(--text-primary);
+    }
+
+    .section-content p {
+        font-size: 1.1rem;
+        line-height: 1.6;
+        color: var(--text-secondary);
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .values-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 2rem;
+        margin: 3rem 0;
+    }
+
+    .value-card {
+        background-color: var(--surface-color);
+        padding: 2rem;
+        border-radius: 8px;
+        text-align: center;
+        box-shadow: 0 2px 4px var(--shadow-color);
+        transition: transform 0.3s ease;
+    }
+
+    .value-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .value-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+    }
+
+    .value-card h3 {
+        margin-bottom: 1rem;
+        color: var(--text-primary);
+    }
+
+    .value-card p {
+        color: var(--text-secondary);
+        line-height: 1.5;
+    }
+
+    .impact-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 2rem;
+        margin: 3rem 0;
+    }
+
+    .stat-card {
+        background-color: var(--surface-color);
+        padding: 2rem;
+        border-radius: 8px;
+        text-align: center;
+        box-shadow: 0 2px 4px var(--shadow-color);
+    }
+
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: bold;
+        color: var(--accent-color);
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+        color: var(--text-secondary);
+        font-size: 1.1rem;
+    }
+
+    .cta-box {
+        background-color: var(--surface-color);
+        padding: 3rem 2rem;
+        border-radius: 8px;
+        text-align: center;
+        margin: 4rem 0;
+        box-shadow: 0 2px 4px var(--shadow-color);
+    }
+
+    .cta-box h3 {
+        font-size: 1.8rem;
+        margin-bottom: 1rem;
+        color: var(--text-primary);
+    }
+
+    .cta-buttons {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        margin-top: 2rem;
+    }
+
+    @media (max-width: 768px) {
+        .about-hero h1 {
+            font-size: 2rem;
+        }
+
+        .section-content h2 {
+            font-size: 1.8rem;
+        }
+
+        .values-grid,
+        .impact-stats {
+            grid-template-columns: 1fr;
+        }
+
+        .cta-buttons {
+            flex-direction: column;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+        }
+    }
+</style>
+{% endblock %} 

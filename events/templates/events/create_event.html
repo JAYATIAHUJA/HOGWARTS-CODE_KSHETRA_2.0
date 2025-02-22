@@ -1,0 +1,135 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container py-5">
+    <h1 class="mb-4">Create New Event</h1>
+    
+    <form method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
+        {% csrf_token %}
+        
+        <!-- Basic Info -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h3 class="card-title mb-0">Basic Information</h3>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label for="title" class="form-label">Event Title*</label>
+                    <input type="text" class="form-control" id="title" name="title" required>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="description" class="form-label">Description*</label>
+                    <textarea class="form-control" id="description" name="description" rows="3" required></textarea>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="date" class="form-label">Date and Time*</label>
+                    <input type="datetime-local" class="form-control" id="date" name="date" required>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="location" class="form-label">Location*</label>
+                    <input type="text" class="form-control" id="location" name="location" required>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="location_map_link" class="form-label">Location Map Link</label>
+                    <input type="url" class="form-control" id="location_map_link" name="location_map_link">
+                </div>
+            </div>
+        </div>
+        
+        <!-- Media -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h3 class="card-title mb-0">Event Media</h3>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label for="main_image" class="form-label">Main Event Image</label>
+                    <input type="file" class="form-control" id="main_image" name="main_image" accept="image/*">
+                </div>
+            </div>
+        </div>
+        
+        <!-- Ticket Types -->
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h3 class="card-title mb-0">Ticket Types</h3>
+                <button type="button" class="btn btn-primary" id="add-ticket-type">Add Ticket Type</button>
+            </div>
+            <div class="card-body" id="ticket-types-container">
+                <!-- Ticket type template will be added here -->
+            </div>
+        </div>
+        
+        <!-- Additional Info -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h3 class="card-title mb-0">Additional Information</h3>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label for="agenda" class="form-label">Agenda</label>
+                    <textarea class="form-control" id="agenda" name="agenda" rows="3"></textarea>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="speakers" class="form-label">Speakers</label>
+                    <textarea class="form-control" id="speakers" name="speakers" rows="3"></textarea>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="faq" class="form-label">FAQ</label>
+                    <textarea class="form-control" id="faq" name="faq" rows="3"></textarea>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="terms_conditions" class="form-label">Terms and Conditions</label>
+                    <textarea class="form-control" id="terms_conditions" name="terms_conditions" rows="3"></textarea>
+                </div>
+            </div>
+        </div>
+        
+        <button type="submit" class="btn btn-primary">Create Event</button>
+    </form>
+</div>
+
+{% block extra_js %}
+<script>
+document.getElementById('add-ticket-type').addEventListener('click', function() {
+    const container = document.getElementById('ticket-types-container');
+    const ticketTypeHtml = `
+        <div class="ticket-type border rounded p-3 mb-3">
+            <div class="mb-3">
+                <label class="form-label">Ticket Type Name*</label>
+                <input type="text" class="form-control" name="ticket_type_name[]" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Price*</label>
+                <input type="number" class="form-control" name="ticket_type_price[]" step="0.01" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Quantity Available*</label>
+                <input type="number" class="form-control" name="ticket_type_quantity[]" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Description</label>
+                <textarea class="form-control" name="ticket_type_description[]"></textarea>
+            </div>
+            <button type="button" class="btn btn-danger remove-ticket-type">Remove</button>
+        </div>
+    `;
+    container.insertAdjacentHTML('beforeend', ticketTypeHtml);
+});
+
+document.addEventListener('click', function(e) {
+    if (e.target && e.target.classList.contains('remove-ticket-type')) {
+        e.target.closest('.ticket-type').remove();
+    }
+});
+</script>
+{% endblock %}
+{% endblock %} 

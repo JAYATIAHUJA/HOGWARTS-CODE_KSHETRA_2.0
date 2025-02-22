@@ -1,0 +1,337 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Profile - Handicraft Market{% endblock %}
+
+{% block extra_css %}
+<style>
+    .profile-container {
+        max-width: 800px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+    }
+
+    .profile-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .profile-avatar {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        margin: 0 auto 1rem;
+        background: var(--surface-color);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 3rem;
+        color: var(--primary-color);
+        border: 3px solid var(--primary-color);
+    }
+
+    .profile-sections {
+        display: grid;
+        gap: 2rem;
+    }
+
+    .profile-section {
+        background: var(--surface-color);
+        border-radius: 8px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 4px var(--shadow-color);
+    }
+
+    .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid var(--border-color);
+    }
+
+    .section-header h2 {
+        margin: 0;
+        color: var(--text-primary);
+    }
+
+    .edit-btn {
+        background: none;
+        border: none;
+        color: var(--accent-color);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem;
+        border-radius: 4px;
+        transition: background-color 0.3s ease;
+    }
+
+    .edit-btn:hover {
+        background-color: var(--hover-color);
+    }
+
+    .profile-form {
+        display: grid;
+        gap: 1rem;
+    }
+
+    .form-group {
+        display: grid;
+        gap: 0.5rem;
+    }
+
+    .form-group label {
+        color: var(--text-secondary);
+        font-size: 0.875rem;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid var(--border-color);
+        border-radius: 4px;
+        background-color: var(--background-color);
+        color: var(--text-primary);
+        transition: border-color 0.3s ease;
+    }
+
+    .form-control:focus {
+        outline: none;
+        border-color: var(--accent-color);
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+    }
+
+    .save-btn {
+        background-color: var(--primary-color);
+        color: white;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: 500;
+        transition: background-color 0.3s ease;
+    }
+
+    .save-btn:hover {
+        background-color: var(--accent-color);
+    }
+
+    .info-row {
+        display: grid;
+        grid-template-columns: 120px 1fr;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .info-label {
+        color: var(--text-secondary);
+        font-weight: 500;
+    }
+
+    .info-value {
+        color: var(--text-primary);
+    }
+
+    @media (max-width: 768px) {
+        .info-row {
+            grid-template-columns: 1fr;
+            gap: 0.25rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="profile-container">
+    <div class="profile-header">
+        <div class="profile-avatar">
+            {% if user.avatar %}
+                <img src="{{ user.avatar.url }}" alt="{{ user.get_full_name }}">
+            {% else %}
+                <i class="fas fa-user"></i>
+            {% endif %}
+        </div>
+        <h1>{{ user.get_full_name|default:user.username }}</h1>
+        <p>Member since {{ user.date_joined|date:"F Y" }}</p>
+    </div>
+
+    <div class="profile-sections">
+        <!-- Personal Information Section -->
+        <div class="profile-section">
+            <div class="section-header">
+                <h2>Personal Information</h2>
+                <button class="edit-btn" onclick="toggleEdit('personal-info')">
+                    <i class="fas fa-edit"></i>
+                    Edit
+                </button>
+            </div>
+            
+            <div id="personal-info-display">
+                <div class="info-row">
+                    <span class="info-label">Username</span>
+                    <span class="info-value">{{ user.username }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Email</span>
+                    <span class="info-value">{{ user.email }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Full Name</span>
+                    <span class="info-value">{{ user.get_full_name }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Phone</span>
+                    <span class="info-value">{{ user.phone_number|default:"Not provided" }}</span>
+                </div>
+            </div>
+
+            <form id="personal-info-form" class="profile-form" style="display: none;" method="POST">
+                {% csrf_token %}
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="first_name">First Name</label>
+                        <input type="text" id="first_name" name="first_name" class="form-control" value="{{ user.first_name }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="last_name">Last Name</label>
+                        <input type="text" id="last_name" name="last_name" class="form-control" value="{{ user.last_name }}">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" class="form-control" value="{{ user.email }}">
+                </div>
+                <div class="form-group">
+                    <label for="phone">Phone Number</label>
+                    <input type="tel" id="phone" name="phone_number" class="form-control" value="{{ user.phone_number }}">
+                </div>
+                <button type="submit" class="save-btn">Save Changes</button>
+            </form>
+        </div>
+
+        <!-- Address Section -->
+        <div class="profile-section">
+            <div class="section-header">
+                <h2>Address Information</h2>
+                <button class="edit-btn" onclick="toggleEdit('address-info')">
+                    <i class="fas fa-edit"></i>
+                    Edit
+                </button>
+            </div>
+
+            <div id="address-info-display">
+                <div class="info-row">
+                    <span class="info-label">Street</span>
+                    <span class="info-value">{{ user.address|default:"Not provided" }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">City</span>
+                    <span class="info-value">{{ user.city|default:"Not provided" }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">State</span>
+                    <span class="info-value">{{ user.state|default:"Not provided" }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Postal Code</span>
+                    <span class="info-value">{{ user.postal_code|default:"Not provided" }}</span>
+                </div>
+            </div>
+
+            <form id="address-info-form" class="profile-form" style="display: none;" method="POST">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="address">Street Address</label>
+                    <input type="text" id="address" name="address" class="form-control" value="{{ user.address }}">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="city">City</label>
+                        <input type="text" id="city" name="city" class="form-control" value="{{ user.city }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="state">State</label>
+                        <input type="text" id="state" name="state" class="form-control" value="{{ user.state }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="postal_code">Postal Code</label>
+                        <input type="text" id="postal_code" name="postal_code" class="form-control" value="{{ user.postal_code }}">
+                    </div>
+                </div>
+                <button type="submit" class="save-btn">Save Changes</button>
+            </form>
+        </div>
+
+        <!-- Password Change Section -->
+        <div class="profile-section">
+            <div class="section-header">
+                <h2>Change Password</h2>
+            </div>
+            <form class="profile-form" method="POST" action="{% url 'accounts:change_password' %}">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="current_password">Current Password</label>
+                    <input type="password" id="current_password" name="current_password" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="new_password1">New Password</label>
+                    <input type="password" id="new_password1" name="new_password1" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="new_password2">Confirm New Password</label>
+                    <input type="password" id="new_password2" name="new_password2" class="form-control">
+                </div>
+                <button type="submit" class="save-btn">Change Password</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+function toggleEdit(section) {
+    const displayElement = document.getElementById(`${section}-display`);
+    const formElement = document.getElementById(`${section}-form`);
+    
+    if (displayElement.style.display !== 'none') {
+        displayElement.style.display = 'none';
+        formElement.style.display = 'block';
+    } else {
+        displayElement.style.display = 'block';
+        formElement.style.display = 'none';
+    }
+}
+
+// Show form validation messages
+const forms = document.querySelectorAll('form');
+forms.forEach(form => {
+    form.addEventListener('submit', function(e) {
+        const requiredFields = form.querySelectorAll('[required]');
+        let isValid = true;
+        
+        requiredFields.forEach(field => {
+            if (!field.value.trim()) {
+                isValid = false;
+                field.classList.add('error');
+            } else {
+                field.classList.remove('error');
+            }
+        });
+        
+        if (!isValid) {
+            e.preventDefault();
+            showNotification('Please fill in all required fields', 'error');
+        }
+    });
+});
+</script>
+{% endblock %}
+{% endblock %} 

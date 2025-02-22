@@ -1,0 +1,185 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Orders - Handicraft Market{% endblock %}
+
+{% block extra_css %}
+<style>
+    .orders-container {
+        max-width: 1200px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+    }
+
+    .orders-header {
+        margin-bottom: 2rem;
+    }
+
+    .order-card {
+        background: var(--surface-color);
+        border-radius: 8px;
+        box-shadow: 0 2px 4px var(--shadow-color);
+        margin-bottom: 1.5rem;
+        overflow: hidden;
+    }
+
+    .order-header {
+        background: var(--primary-color);
+        color: white;
+        padding: 1rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .order-status {
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.875rem;
+        font-weight: 500;
+    }
+
+    .status-pending { background: var(--warning-color); }
+    .status-confirmed { background: var(--info-color); }
+    .status-shipped { background: var(--accent-color); }
+    .status-delivered { background: var(--success-color); }
+    .status-cancelled { background: var(--error-color); }
+
+    .order-body {
+        padding: 1.5rem;
+    }
+
+    .order-items {
+        margin-bottom: 1.5rem;
+    }
+
+    .order-item {
+        display: grid;
+        grid-template-columns: 80px 1fr auto;
+        gap: 1rem;
+        padding: 1rem 0;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .order-item:last-child {
+        border-bottom: none;
+    }
+
+    .item-image {
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+        border-radius: 4px;
+    }
+
+    .item-details h4 {
+        margin: 0 0 0.5rem;
+        color: var(--text-primary);
+    }
+
+    .item-price {
+        color: var(--text-secondary);
+    }
+
+    .order-summary {
+        background: var(--background-color);
+        padding: 1rem;
+        border-radius: 4px;
+    }
+
+    .summary-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.5rem;
+    }
+
+    .summary-row.total {
+        font-weight: bold;
+        border-top: 1px solid var(--border-color);
+        padding-top: 0.5rem;
+        margin-top: 0.5rem;
+    }
+
+    .empty-orders {
+        text-align: center;
+        padding: 3rem 1rem;
+    }
+
+    .empty-orders i {
+        font-size: 3rem;
+        color: var(--text-secondary);
+        margin-bottom: 1rem;
+    }
+
+    @media (max-width: 768px) {
+        .order-item {
+            grid-template-columns: 60px 1fr;
+        }
+
+        .item-price {
+            grid-column: 2;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="orders-container">
+    <div class="orders-header">
+        <h1>My Orders</h1>
+    </div>
+
+    {% if orders %}
+        {% for order in orders %}
+            <div class="order-card">
+                <div class="order-header">
+                    <div>
+                        <h3>Order #{{ order.id }}</h3>
+                        <small>Placed on {{ order.created_at|date:"F j, Y" }}</small>
+                    </div>
+                    <span class="order-status status-{{ order.status|lower }}">
+                        {{ order.status }}
+                    </span>
+                </div>
+                <div class="order-body">
+                    <div class="order-items">
+                        {% for item in order.items.all %}
+                            <div class="order-item">
+                                <img src="{{ item.product.main_image.url }}" alt="{{ item.product.name }}" class="item-image">
+                                <div class="item-details">
+                                    <h4>{{ item.product.name }}</h4>
+                                    <p>Quantity: {{ item.quantity }}</p>
+                                </div>
+                                <div class="item-price">
+                                    ${{ item.price }}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <div class="order-summary">
+                        <div class="summary-row">
+                            <span>Subtotal</span>
+                            <span>${{ order.total_amount }}</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>Shipping</span>
+                            <span>Free</span>
+                        </div>
+                        <div class="summary-row total">
+                            <span>Total</span>
+                            <span>${{ order.total_amount }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <div class="empty-orders">
+            <i class="fas fa-shopping-bag"></i>
+            <h2>No orders yet</h2>
+            <p>You haven't placed any orders yet.</p>
+            <a href="{% url 'products:product_list' %}" class="btn btn-primary">Start Shopping</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %} 

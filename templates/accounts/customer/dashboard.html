@@ -1,0 +1,366 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Account - Handicraft Market{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <div class="dashboard-header">
+        <div class="welcome-section">
+            <h1>Welcome, {{ user.get_full_name|default:user.username }}</h1>
+            <p>Manage your orders and wishlist</p>
+        </div>
+    </div>
+    
+    <div class="dashboard-grid">
+        <div class="dashboard-section orders-section">
+            <div class="section-header">
+                <h2>Recent Orders</h2>
+                <a href="{% url 'accounts:customer_orders' %}" class="btn btn-text">View All Orders</a>
+            </div>
+            
+            {% if recent_orders %}
+            <div class="orders-list">
+                {% for order in recent_orders %}
+                <div class="order-card">
+                    <div class="order-header">
+                        <div class="order-info">
+                            <h4>Order #{{ order.id }}</h4>
+                            <p class="order-date">{{ order.created_at|date:"F j, Y" }}</p>
+                        </div>
+                        <span class="order-status {{ order.status|lower }}">{{ order.status }}</span>
+                    </div>
+                    
+                    <div class="order-items">
+                        {% for item in order.items.all %}
+                        <div class="order-item">
+                            <div class="item-image">
+                                {% if item.product.images.exists %}
+                                <img src="{{ item.product.images.first.image.url }}" alt="{{ item.product.name }}">
+                                {% else %}
+                                <div class="no-image">No Image</div>
+                                {% endif %}
+                            </div>
+                            <div class="item-details">
+                                <h5>{{ item.product.name }}</h5>
+                                <p class="item-price">₹{{ item.price|floatformat:2 }} × {{ item.quantity }}</p>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="order-footer">
+                        <div class="order-total">
+                            <span>Total:</span>
+                            <span class="total-amount">₹{{ order.total_amount|floatformat:2 }}</span>
+                        </div>
+                        {% if order.status == 'DELIVERED' %}
+                        <button class="btn btn-secondary">Write Review</button>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <div class="empty-icon">🛍️</div>
+                <h3>No Orders Yet</h3>
+                <p>Start shopping to see your orders here</p>
+                <a href="{% url 'products:product_list' %}" class="btn btn-primary">Browse Products</a>
+            </div>
+            {% endif %}
+        </div>
+        
+        <div class="dashboard-section wishlist-section">
+            <div class="section-header">
+                <h2>My Wishlist</h2>
+                <a href="{% url 'accounts:customer_wishlist' %}" class="btn btn-text">View All</a>
+            </div>
+            
+            {% if wishlist_items %}
+            <div class="wishlist-grid">
+                {% for item in wishlist_items %}
+                <div class="product-card">
+                    <div class="product-image">
+                        {% if item.images.exists %}
+                        <img src="{{ item.images.first.image.url }}" alt="{{ item.name }}">
+                        {% else %}
+                        <div class="no-image">No Image</div>
+                        {% endif %}
+                        <button class="wishlist-remove" data-product-id="{{ item.id }}">×</button>
+                    </div>
+                    <div class="product-info">
+                        <h4>{{ item.name }}</h4>
+                        <p class="product-price">₹{{ item.price|floatformat:2 }}</p>
+                        <button class="btn btn-primary btn-sm btn-block">Add to Cart</button>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <div class="empty-icon">❤️</div>
+                <h3>Your Wishlist is Empty</h3>
+                <p>Save items you like for later</p>
+                <a href="{% url 'products:product_list' %}" class="btn btn-primary">Browse Products</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+    .dashboard-container {
+        padding: 2rem;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+    
+    .dashboard-header {
+        margin-bottom: 2rem;
+    }
+    
+    .welcome-section h1 {
+        font-size: 2rem;
+        color: var(--primary-color);
+        margin-bottom: 0.5rem;
+    }
+    
+    .welcome-section p {
+        color: var(--text-secondary);
+    }
+    
+    .dashboard-grid {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 2rem;
+    }
+    
+    .dashboard-section {
+        background-color: var(--surface-color);
+        border-radius: 8px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+    
+    .btn-text {
+        color: var(--accent-color);
+        text-decoration: none;
+    }
+    
+    .orders-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .order-card {
+        background-color: var(--background-color);
+        border-radius: 8px;
+        padding: 1rem;
+    }
+    
+    .order-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 1rem;
+    }
+    
+    .order-status {
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        font-size: 0.85rem;
+    }
+    
+    .order-status.pending {
+        background-color: rgba(241, 196, 15, 0.1);
+        color: var(--warning-color);
+    }
+    
+    .order-status.confirmed {
+        background-color: rgba(52, 152, 219, 0.1);
+        color: var(--info-color);
+    }
+    
+    .order-status.shipped {
+        background-color: rgba(155, 89, 182, 0.1);
+        color: #9b59b6;
+    }
+    
+    .order-status.delivered {
+        background-color: rgba(39, 174, 96, 0.1);
+        color: var(--success-color);
+    }
+    
+    .order-items {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--border-color);
+    }
+    
+    .order-item {
+        display: flex;
+        gap: 1rem;
+    }
+    
+    .item-image {
+        width: 60px;
+        height: 60px;
+        border-radius: 4px;
+        overflow: hidden;
+    }
+    
+    .item-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .no-image {
+        width: 100%;
+        height: 100%;
+        background-color: var(--border-color);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.8rem;
+        color: var(--text-secondary);
+    }
+    
+    .item-details h5 {
+        margin-bottom: 0.25rem;
+    }
+    
+    .item-price {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+    }
+    
+    .order-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .order-total {
+        font-weight: bold;
+    }
+    
+    .total-amount {
+        color: var(--primary-color);
+        margin-left: 0.5rem;
+    }
+    
+    .wishlist-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 1rem;
+    }
+    
+    .product-card {
+        background-color: var(--background-color);
+        border-radius: 8px;
+        overflow: hidden;
+        position: relative;
+    }
+    
+    .product-image {
+        position: relative;
+        padding-top: 100%;
+    }
+    
+    .product-image img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .wishlist-remove {
+        position: absolute;
+        top: 0.5rem;
+        right: 0.5rem;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background-color: rgba(0, 0, 0, 0.5);
+        color: white;
+        border: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+    }
+    
+    .product-info {
+        padding: 1rem;
+    }
+    
+    .product-info h4 {
+        margin-bottom: 0.5rem;
+        font-size: 0.9rem;
+    }
+    
+    .product-price {
+        color: var(--primary-color);
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+    }
+    
+    .btn-sm {
+        padding: 0.5rem;
+        font-size: 0.9rem;
+    }
+    
+    .btn-block {
+        width: 100%;
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 2rem;
+    }
+    
+    .empty-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+    }
+    
+    .empty-state h3 {
+        margin-bottom: 0.5rem;
+    }
+    
+    .empty-state p {
+        color: var(--text-secondary);
+        margin-bottom: 1rem;
+    }
+    
+    @media (max-width: 768px) {
+        .dashboard-container {
+            padding: 1rem;
+        }
+        
+        .dashboard-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .wishlist-grid {
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        }
+    }
+</style>
+{% endblock %} 

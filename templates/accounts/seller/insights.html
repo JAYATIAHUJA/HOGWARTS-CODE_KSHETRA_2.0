@@ -1,0 +1,310 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Business Insights - Handicraft Market{% endblock %}
+
+{% block content %}
+<div class="insights-container">
+    <div class="insights-header">
+        <h1>Business Insights</h1>
+        <p>Track your business performance and growth</p>
+    </div>
+    
+    <div class="insights-grid">
+        <div class="insight-card revenue-card">
+            <div class="insight-header">
+                <h2>Total Revenue</h2>
+                <select class="time-filter">
+                    <option value="all">All Time</option>
+                    <option value="year">This Year</option>
+                    <option value="month">This Month</option>
+                </select>
+            </div>
+            <div class="insight-content">
+                <div class="revenue-amount">₹{{ total_revenue|floatformat:2 }}</div>
+                <div class="chart-container">
+                    <canvas id="revenueChart"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <div class="insight-card performance-card">
+            <div class="insight-header">
+                <h2>Product Performance</h2>
+            </div>
+            <div class="insight-content">
+                <div class="performance-list">
+                    {% for product in product_performance %}
+                    <div class="performance-item">
+                        <div class="product-info">
+                            <div class="product-image">
+                                {% if product.images.exists %}
+                                <img src="{{ product.images.first.image.url }}" alt="{{ product.name }}">
+                                {% else %}
+                                <div class="no-image">No Image</div>
+                                {% endif %}
+                            </div>
+                            <div class="product-details">
+                                <h4>{{ product.name }}</h4>
+                                <p class="product-price">₹{{ product.price|floatformat:2 }}</p>
+                            </div>
+                        </div>
+                        <div class="performance-stats">
+                            <div class="stat">
+                                <span class="stat-label">Orders</span>
+                                <span class="stat-value">{{ product.order_count }}</span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-label">Revenue</span>
+                                <span class="stat-value">₹{{ product.revenue|default:0|floatformat:2 }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="insight-card sales-card">
+            <div class="insight-header">
+                <h2>Monthly Sales</h2>
+            </div>
+            <div class="insight-content">
+                <div class="chart-container">
+                    <canvas id="salesChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .insights-container {
+        padding: 2rem;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+    
+    .insights-header {
+        margin-bottom: 2rem;
+    }
+    
+    .insights-header h1 {
+        font-size: 2rem;
+        color: var(--primary-color);
+        margin-bottom: 0.5rem;
+    }
+    
+    .insights-header p {
+        color: var(--text-secondary);
+    }
+    
+    .insights-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+    }
+    
+    .insight-card {
+        background-color: var(--surface-color);
+        border-radius: 8px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    .insight-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+    
+    .time-filter {
+        padding: 0.5rem;
+        border: 1px solid var(--border-color);
+        border-radius: 4px;
+        background-color: var(--background-color);
+        color: var(--text-primary);
+    }
+    
+    .revenue-amount {
+        font-size: 2rem;
+        font-weight: bold;
+        color: var(--primary-color);
+        margin-bottom: 1rem;
+    }
+    
+    .chart-container {
+        width: 100%;
+        height: 300px;
+    }
+    
+    .performance-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .performance-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem;
+        background-color: var(--background-color);
+        border-radius: 4px;
+    }
+    
+    .product-info {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+    
+    .product-image {
+        width: 50px;
+        height: 50px;
+        border-radius: 4px;
+        overflow: hidden;
+    }
+    
+    .product-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .no-image {
+        width: 100%;
+        height: 100%;
+        background-color: var(--border-color);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.8rem;
+        color: var(--text-secondary);
+    }
+    
+    .product-details h4 {
+        margin-bottom: 0.25rem;
+    }
+    
+    .product-price {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+    }
+    
+    .performance-stats {
+        display: flex;
+        gap: 1.5rem;
+    }
+    
+    .stat {
+        text-align: right;
+    }
+    
+    .stat-label {
+        display: block;
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+        margin-bottom: 0.25rem;
+    }
+    
+    .stat-value {
+        font-weight: bold;
+        color: var(--primary-color);
+    }
+    
+    @media (max-width: 768px) {
+        .insights-container {
+            padding: 1rem;
+        }
+        
+        .insights-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .performance-stats {
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .stat {
+            text-align: left;
+        }
+    }
+</style>
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // Revenue Chart
+        const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+        new Chart(revenueCtx, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                datasets: [{
+                    label: 'Revenue',
+                    data: {{ monthly_sales|safe }},
+                    borderColor: '#3498db',
+                    backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return '₹' + value;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Sales Chart
+        const salesCtx = document.getElementById('salesChart').getContext('2d');
+        new Chart(salesCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                datasets: [{
+                    label: 'Orders',
+                    data: {{ monthly_sales|safe }},
+                    backgroundColor: '#2ecc71',
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1
+                        }
+                    }
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}
+{% endblock %} 

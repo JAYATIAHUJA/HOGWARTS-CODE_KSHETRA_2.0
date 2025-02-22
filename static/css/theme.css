@@ -1,0 +1,108 @@
+/* Theme Variables */
+:root[data-theme="light"] {
+    --background-color: #ffffff;
+    --surface-color: #ffffff;
+    --border-color: #e0e0e0;
+    --text-primary: #333333;
+    --text-secondary: #666666;
+    --accent-color: #ff6b6b;
+    --accent-hover: #ff5252;
+    --shadow-color: rgba(0, 0, 0, 0.1);
+    --nav-background: #ffffff;
+    --input-background: #ffffff;
+    --card-background: #ffffff;
+    --success-color: #4caf50;
+    --error-color: #f44336;
+    --warning-color: #ff9800;
+}
+
+:root[data-theme="dark"] {
+    --background-color: #1a1a1a;
+    --surface-color: #2d2d2d;
+    --border-color: #404040;
+    --text-primary: #ffffff;
+    --text-secondary: #b3b3b3;
+    --accent-color: #ff6b6b;
+    --accent-hover: #ff5252;
+    --shadow-color: rgba(0, 0, 0, 0.3);
+    --nav-background: #2d2d2d;
+    --input-background: #333333;
+    --card-background: #2d2d2d;
+    --success-color: #81c784;
+    --error-color: #e57373;
+    --warning-color: #ffb74d;
+}
+
+/* Base Styles */
+body {
+    background-color: var(--background-color);
+    color: var(--text-primary);
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Card and Surface Styles */
+.card, 
+.surface {
+    background-color: var(--surface-color);
+    border: 1px solid var(--border-color);
+    box-shadow: 0 2px 4px var(--shadow-color);
+}
+
+/* Input Styles */
+input, 
+select, 
+textarea {
+    background-color: var(--input-background);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+}
+
+input::placeholder {
+    color: var(--text-secondary);
+}
+
+/* Button Styles */
+.btn-primary {
+    background-color: var(--accent-color);
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: var(--accent-hover);
+}
+
+.btn-secondary {
+    background-color: var(--surface-color);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+}
+
+.btn-secondary:hover {
+    background-color: var(--border-color);
+}
+
+/* Navigation Styles */
+.main-header {
+    background-color: var(--nav-background);
+    border-bottom: 1px solid var(--border-color);
+}
+
+/* Status Colors */
+.success { color: var(--success-color); }
+.error { color: var(--error-color); }
+.warning { color: var(--warning-color); }
+
+/* Theme Toggle Button */
+.theme-toggle button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.5rem;
+    padding: 0.5rem;
+    color: var(--text-primary);
+    transition: transform 0.3s ease;
+}
+
+.theme-toggle button:hover {
+    transform: rotate(360deg);
+} 

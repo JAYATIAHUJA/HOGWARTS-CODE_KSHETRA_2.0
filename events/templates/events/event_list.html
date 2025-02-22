@@ -1,0 +1,26 @@
+{% extends 'base.html' %} {% block content %}
+<div class="events-container">
+  <h1>Events</h1>
+
+  {% if events %}
+  <div class="events-grid">
+    {% for event in events %}
+    <div class="event-card">
+      {% if event.main_image %}
+      <img src="{{ event.main_image.url }}" alt="{{ event.title }}" />
+      {% endif %}
+      <h2>{{ event.title }}</h2>
+      <p class="event-date">{{ event.date_time }}</p>
+      <p class="event-location">{{ event.location }}</p>
+      <p class="event-description">{{ event.description|truncatewords:30 }}</p>
+      <a href="{% url 'events:event_detail' event.id %}" class="btn btn-primary"
+        >View Details</a
+      >
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p>No events available at the moment.</p>
+  {% endif %}
+</div>
+{% endblock %}

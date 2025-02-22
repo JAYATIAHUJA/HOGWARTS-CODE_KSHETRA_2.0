@@ -1,0 +1,230 @@
+{% extends 'base.html' %} {% load static %} {% block title %}Handicraft
+Categories{% endblock %} {% block content %}
+<div class="categories-container">
+  <h1 class="page-title">Explore Handicraft Categories</h1>
+
+  <div class="categories-grid">
+    <!-- Textile Handicrafts -->
+    <div class="category-card">
+      <div class="category-image">
+        <img
+          src="{% static 'images/categories/textile.png' %}"
+          alt="Textile Handicrafts"
+        />
+      </div>
+      <div class="category-content">
+        <h3 data-translate="textile">Textile-Based Handicrafts</h3>
+        <p data-translate="textile_description">
+          Traditional textiles, embroidery, weaving, block printing, and fabric
+          art
+        </p>
+        <a
+          href="{% url 'products:category_detail' 'textile' %}"
+          class="category-link"
+        >
+          Explore <i class="fas fa-arrow-right"></i>
+        </a>
+      </div>
+    </div>
+
+    <!-- Clay & Ceramic -->
+    <div class="category-card">
+      <div class="category-image">
+        <img
+          src="{% static 'images/categories/ceramic.jpg' %}"
+          alt="Clay & Ceramic"
+        />
+      </div>
+      <div class="category-content">
+        <h3>Clay & Ceramic Handicrafts</h3>
+        <p>Pottery, terracotta, ceramic art, and traditional clay crafts</p>
+        <a
+          href="{% url 'products:category_detail' 'ceramic' %}"
+          class="category-link"
+        >
+          Explore <i class="fas fa-arrow-right"></i>
+        </a>
+      </div>
+    </div>
+
+    <!-- Metal Handicrafts -->
+    <div class="category-card">
+      <div class="category-image">
+        <img
+          src="{% static 'images/categories/metal.jpg' %}"
+          alt="Metal Handicrafts"
+        />
+      </div>
+      <div class="category-content">
+        <h3>Metal Handicrafts</h3>
+        <p>Brass, copper, bronze, and traditional metalwork</p>
+        <a
+          href="{% url 'products:category_detail' 'metal' %}"
+          class="category-link"
+        >
+          Explore <i class="fas fa-arrow-right"></i>
+        </a>
+      </div>
+    </div>
+
+    <!-- Wood & Bamboo -->
+    <div class="category-card">
+      <div class="category-image">
+        <img
+          src="{% static 'images/categories/wood.jpg' %}"
+          alt="Wood & Bamboo"
+        />
+      </div>
+      <div class="category-content">
+        <h3>Wood & Bamboo Handicrafts</h3>
+        <p>Carved furniture, decorative items, and bamboo crafts</p>
+        <a
+          href="{% url 'products:category_detail' 'wood' %}"
+          class="category-link"
+        >
+          Explore <i class="fas fa-arrow-right"></i>
+        </a>
+      </div>
+    </div>
+
+    <!-- Stone Handicrafts -->
+    <div class="category-card">
+      <div class="category-image">
+        <img
+          src="{% static 'images/categories/stone.jpg' %}"
+          alt="Stone Handicrafts"
+        />
+      </div>
+      <div class="category-content">
+        <h3>Stone Handicrafts</h3>
+        <p>Marble, granite, and traditional stone carvings</p>
+        <a
+          href="{% url 'products:category_detail' 'stone' %}"
+          class="category-link"
+        >
+          Explore <i class="fas fa-arrow-right"></i>
+        </a>
+      </div>
+    </div>
+
+    <!-- Jewelry -->
+    <div class="category-card">
+      <div class="category-image">
+        <img src="{% static 'images/categories/jewelry.jpg' %}" alt="Jewelry" />
+      </div>
+      <div class="category-content">
+        <h3>Jewelry Handicrafts</h3>
+        <p>Traditional jewelry, beadwork, and ethnic accessories</p>
+        <a
+          href="{% url 'products:category_detail' 'jewelry' %}"
+          class="category-link"
+        >
+          Explore <i class="fas fa-arrow-right"></i>
+        </a>
+      </div>
+    </div>
+
+    <!-- Additional categories... -->
+  </div>
+</div>
+
+<style>
+  .categories-container {
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .page-title {
+    text-align: center;
+    margin-bottom: 3rem;
+    color: var(--text-primary);
+    font-family: var(--font-heading);
+    position: relative;
+  }
+
+  .page-title::after {
+    content: "";
+    display: block;
+    width: 60px;
+    height: 3px;
+    background: var(--accent-color);
+    margin: 1rem auto;
+  }
+
+  .categories-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+  }
+
+  .category-card {
+    background: var(--surface-color);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+  }
+
+  .category-card:hover {
+    transform: translateY(-5px);
+  }
+
+  .category-image {
+    height: 200px;
+    overflow: hidden;
+  }
+
+  .category-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+  }
+
+  .category-card:hover .category-image img {
+    transform: scale(1.1);
+  }
+
+  .category-content {
+    padding: 1.5rem;
+  }
+
+  .category-content h3 {
+    color: var(--text-primary);
+    margin: 0 0 0.5rem;
+    font-size: 1.25rem;
+  }
+
+  .category-content p {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+  }
+
+  .category-link {
+    display: inline-flex;
+    align-items: center;
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 500;
+    gap: 0.5rem;
+    transition: color 0.3s ease;
+  }
+
+  .category-link:hover {
+    color: var(--accent-color);
+  }
+
+  @media (max-width: 768px) {
+    .categories-container {
+      padding: 1rem;
+    }
+
+    .categories-grid {
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1rem;
+    }
+  }
+</style>
+{% endblock %}

@@ -1,0 +1,134 @@
+/* Tablet Styles */
+@media screen and (max-width: 768px) {
+    .nav-container {
+        padding: 1rem;
+    }
+
+    .nav-links {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background-color: var(--surface-color);
+        flex-direction: column;
+        padding: 1rem;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .nav-links.active {
+        display: flex;
+    }
+
+    .nav-links li {
+        margin: 0.5rem 0;
+    }
+
+    .nav-toggle {
+        display: flex;
+    }
+
+    .grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .form-container {
+        margin: 1rem;
+    }
+}
+
+/* Mobile Styles */
+@media screen and (max-width: 480px) {
+    .container {
+        padding: 0 0.5rem;
+    }
+
+    .grid {
+        grid-template-columns: 1fr;
+    }
+
+    .footer-content {
+        grid-template-columns: 1fr;
+    }
+
+    .product-card {
+        margin: 0.5rem;
+    }
+
+    .form-container {
+        margin: 0.5rem;
+        padding: 1rem;
+    }
+
+    .btn {
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+
+    .messages {
+        left: 1rem;
+        right: 1rem;
+    }
+}
+
+/* Large Desktop Styles */
+@media screen and (min-width: 1200px) {
+    .container {
+        max-width: 1400px;
+    }
+
+    .grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+/* Print Styles */
+@media print {
+    .nav-container,
+    .theme-toggle,
+    .footer {
+        display: none;
+    }
+
+    .container {
+        max-width: 100%;
+        margin: 0;
+        padding: 0;
+    }
+
+    body {
+        color: #000;
+        background: #fff;
+    }
+
+    a {
+        text-decoration: underline;
+    }
+
+    .card {
+        break-inside: avoid;
+        border: 1px solid #ddd;
+    }
+}
+
+/* Dark Mode Preference */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --primary-color: #3498db;
+        --secondary-color: #e67e22;
+        --accent-color: #2ecc71;
+        --background-color: #1a1a1a;
+        --surface-color: #2d2d2d;
+        --text-primary: #ecf0f1;
+        --text-secondary: #bdc3c7;
+        --border-color: #34495e;
+    }
+}
+
+/* Reduced Motion Preference */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation: none !important;
+        transition: none !important;
+    }
+} 

@@ -1,0 +1,310 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}KYC Verification - Handicraft Market{% endblock %}
+
+{% block content %}
+<div class="kyc-container">
+    <div class="kyc-box">
+        <h1 class="kyc-title">KYC Verification</h1>
+        <p class="kyc-subtitle">Complete your verification to start selling</p>
+        
+        {% if kyc and kyc.verification_status != 'PENDING' %}
+        <div class="kyc-status {{ kyc.verification_status|lower }}">
+            <div class="status-icon">
+                {% if kyc.verification_status == 'VERIFIED' %}
+                ✓
+                {% elif kyc.verification_status == 'REJECTED' %}
+                ✕
+                {% endif %}
+            </div>
+            <div class="status-text">
+                <h3>Verification Status: {{ kyc.verification_status }}</h3>
+                <p>Last Updated: {{ kyc.verified_at|date:"F j, Y" }}</p>
+            </div>
+        </div>
+        {% endif %}
+        
+        <form method="post" enctype="multipart/form-data" class="kyc-form">
+            {% csrf_token %}
+            
+            {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                <div class="message {{ message.tags }}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            
+            {% if form.non_field_errors %}
+            <div class="form-errors">
+                {% for error in form.non_field_errors %}
+                <p class="error">{{ error }}</p>
+                {% endfor %}
+            </div>
+            {% endif %}
+            
+            <div class="form-section">
+                <h2>Identity Verification</h2>
+                <p class="section-desc">Please provide a clear photo or scan of your government-issued ID</p>
+                
+                <div class="form-group">
+                    <label for="{{ form.id_proof.id_for_label }}" class="form-label">ID Proof</label>
+                    {% if kyc.id_proof %}
+                    <div class="file-preview">
+                        <span>Current file: {{ kyc.id_proof.name }}</span>
+                    </div>
+                    {% endif %}
+                    {{ form.id_proof }}
+                    {% if form.id_proof.errors %}
+                    <div class="form-errors">
+                        {% for error in form.id_proof.errors %}
+                        <p class="error">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                    <div class="file-hints">
+                        <p>Accepted formats: JPG, PNG, PDF (Max size: 5MB)</p>
+                        <p>Examples: Aadhar Card, PAN Card, Driving License</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-section">
+                <h2>Address Verification</h2>
+                <p class="section-desc">Provide a recent utility bill or any government document showing your address</p>
+                
+                <div class="form-group">
+                    <label for="{{ form.address_proof.id_for_label }}" class="form-label">Address Proof</label>
+                    {% if kyc.address_proof %}
+                    <div class="file-preview">
+                        <span>Current file: {{ kyc.address_proof.name }}</span>
+                    </div>
+                    {% endif %}
+                    {{ form.address_proof }}
+                    {% if form.address_proof.errors %}
+                    <div class="form-errors">
+                        {% for error in form.address_proof.errors %}
+                        <p class="error">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                    <div class="file-hints">
+                        <p>Accepted formats: JPG, PNG, PDF (Max size: 5MB)</p>
+                        <p>Examples: Electricity Bill, Water Bill, Bank Statement</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-section">
+                <h2>Business Verification</h2>
+                <p class="section-desc">Upload documents that prove your business authenticity</p>
+                
+                <div class="form-group">
+                    <label for="{{ form.business_proof.id_for_label }}" class="form-label">Business Proof</label>
+                    {% if kyc.business_proof %}
+                    <div class="file-preview">
+                        <span>Current file: {{ kyc.business_proof.name }}</span>
+                    </div>
+                    {% endif %}
+                    {{ form.business_proof }}
+                    {% if form.business_proof.errors %}
+                    <div class="form-errors">
+                        {% for error in form.business_proof.errors %}
+                        <p class="error">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                    <div class="file-hints">
+                        <p>Accepted formats: JPG, PNG, PDF (Max size: 5MB)</p>
+                        <p>Examples: Business Registration, Trade License, GST Certificate</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-section">
+                <h2>Bank Account Details</h2>
+                <p class="section-desc">Provide your bank account information for receiving payments</p>
+                
+                <div class="form-group">
+                    <label for="bank_account_number" class="form-label">Account Number</label>
+                    {{ form.bank_account_number }}
+                    {% if form.bank_account_number.errors %}
+                    <div class="form-errors">
+                        {% for error in form.bank_account_number.errors %}
+                        <p class="error">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <div class="form-group">
+                    <label for="bank_ifsc" class="form-label">IFSC Code</label>
+                    {{ form.bank_ifsc }}
+                    {% if form.bank_ifsc.errors %}
+                    <div class="form-errors">
+                        {% for error in form.bank_ifsc.errors %}
+                        <p class="error">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <div class="form-group">
+                    <label for="bank_account_name" class="form-label">Account Holder Name</label>
+                    {{ form.bank_account_name }}
+                    {% if form.bank_account_name.errors %}
+                    <div class="form-errors">
+                        {% for error in form.bank_account_name.errors %}
+                        <p class="error">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <div class="form-group">
+                    <label for="bank_name" class="form-label">Bank Name</label>
+                    {{ form.bank_name }}
+                    {% if form.bank_name.errors %}
+                    <div class="form-errors">
+                        {% for error in form.bank_name.errors %}
+                        <p class="error">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            {{ form.bank_details }}
+            
+            <div class="form-group form-actions">
+                <button type="submit" class="btn btn-primary btn-block">Submit KYC Details</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    .kyc-container {
+        padding: 2rem;
+        max-width: 800px;
+        margin: 0 auto;
+    }
+    
+    .kyc-box {
+        background-color: var(--surface-color);
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        padding: 2rem;
+    }
+    
+    .kyc-title {
+        font-size: 2rem;
+        color: var(--primary-color);
+        margin-bottom: 0.5rem;
+        text-align: center;
+    }
+    
+    .kyc-subtitle {
+        color: var(--text-secondary);
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+    
+    .kyc-status {
+        display: flex;
+        align-items: center;
+        padding: 1rem;
+        border-radius: 8px;
+        margin-bottom: 2rem;
+    }
+    
+    .kyc-status.verified {
+        background-color: rgba(39, 174, 96, 0.1);
+        border: 1px solid var(--success-color);
+    }
+    
+    .kyc-status.rejected {
+        background-color: rgba(231, 76, 60, 0.1);
+        border: 1px solid var(--error-color);
+    }
+    
+    .status-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        margin-right: 1rem;
+    }
+    
+    .verified .status-icon {
+        background-color: var(--success-color);
+        color: white;
+    }
+    
+    .rejected .status-icon {
+        background-color: var(--error-color);
+        color: white;
+    }
+    
+    .form-section {
+        margin-bottom: 2rem;
+        padding-bottom: 2rem;
+        border-bottom: 1px solid var(--border-color);
+    }
+    
+    .form-section:last-of-type {
+        border-bottom: none;
+    }
+    
+    .form-section h2 {
+        font-size: 1.25rem;
+        color: var(--primary-color);
+        margin-bottom: 0.5rem;
+    }
+    
+    .section-desc {
+        color: var(--text-secondary);
+        margin-bottom: 1.5rem;
+        font-size: 0.9rem;
+    }
+    
+    .file-preview {
+        background-color: var(--background-color);
+        padding: 0.5rem;
+        border-radius: 4px;
+        margin-bottom: 0.5rem;
+        font-size: 0.9rem;
+    }
+    
+    .file-hints {
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+        margin-top: 0.5rem;
+    }
+    
+    .file-hints p {
+        margin-bottom: 0.25rem;
+    }
+    
+    @media (max-width: 480px) {
+        .kyc-container {
+            padding: 1rem;
+        }
+        
+        .kyc-box {
+            padding: 1.5rem;
+        }
+        
+        .form-section {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem;
+        }
+    }
+</style>
+{% endblock %} 

@@ -1,0 +1,756 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}Handicraft Market{% endblock %}</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Rozha+One&family=Tiro+Devanagari+Hindi&family=Poppins:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="{% static 'css/theme.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/responsive.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/cart.css' %}" />
+    {% block extra_css %}{% endblock %}
+    <style>
+      :root {
+        --primary-color: #2563eb;
+        --primary-color-rgb: 37, 99, 235;
+        --accent-color: #1d4ed8;
+        --text-primary: #1f2937;
+        --text-secondary: #4b5563;
+        --background-color: #ffffff;
+        --surface-color: #ffffff;
+        --border-color: #e5e7eb;
+        --shadow-color: rgba(0, 0, 0, 0.1);
+        --error-color: #dc2626;
+        --warning-color: #f59e0b;
+        --success-color: #10b981;
+        --font-heading: "Rozha One", serif;
+        --font-hindi: "Tiro Devanagari Hindi", serif;
+        --font-body: "Poppins", sans-serif;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --primary-color: #3b82f6;
+          --primary-color-rgb: 59, 130, 246;
+          --accent-color: #2563eb;
+          --text-primary: #f3f4f6;
+          --text-secondary: #9ca3af;
+          --background-color: #1f2937;
+          --surface-color: #111827;
+          --border-color: #374151;
+          --shadow-color: rgba(0, 0, 0, 0.25);
+        }
+      }
+
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: var(--font-body);
+        background-color: var(--background-color);
+        color: var(--text-primary);
+      }
+
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6 {
+        font-family: var(--font-heading);
+      }
+
+      .hindi-text {
+        font-family: var(--font-hindi);
+      }
+
+      /* Ethnic decorative elements */
+      .page-title {
+        text-align: center;
+        margin: 2rem 0;
+        position: relative;
+      }
+
+      .page-title::before,
+      .page-title::after {
+        content: "";
+        position: absolute;
+        top: 50%;
+        width: 100px;
+        height: 2px;
+        background: var(--accent-color);
+        transform: translateY(-50%);
+      }
+
+      .page-title::before {
+        left: -120px;
+      }
+
+      .page-title::after {
+        right: -120px;
+      }
+
+      .decorative-corner {
+        position: absolute;
+        width: 50px;
+        height: 50px;
+        opacity: 0.2;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23c94f26'%3E%3Cpath d='M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.6 0 12 0zm0 22c-5.5 0-10-4.5-10-10S6.5 2 12 2s10 4.5 10 10-4.5 10-10 10z'/%3E%3C/svg%3E");
+      }
+
+      .decorative-corner.top-left {
+        top: 20px;
+        left: 20px;
+        transform: rotate(0deg);
+      }
+
+      .decorative-corner.top-right {
+        top: 20px;
+        right: 20px;
+        transform: rotate(90deg);
+      }
+
+      .decorative-corner.bottom-left {
+        bottom: 20px;
+        left: 20px;
+        transform: rotate(270deg);
+      }
+
+      .decorative-corner.bottom-right {
+        bottom: 20px;
+        right: 20px;
+        transform: rotate(180deg);
+      }
+
+      /* Main content wrapper with ethnic border */
+      .main-content {
+        position: relative;
+        padding: 2rem;
+        background-color: var(--background-color);
+      }
+
+      .main-content::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 10px;
+        background-image: repeating-linear-gradient(
+          45deg,
+          var(--accent-color) 0,
+          var(--accent-color) 2px,
+          transparent 2px,
+          transparent 8px
+        );
+        opacity: 0.3;
+      }
+
+      /* Add your other base styles here */
+    </style>
+    <script>
+      // Language management
+      const defaultLanguage = "en";
+      let currentLanguage =
+        localStorage.getItem("siteLanguage") || defaultLanguage;
+
+      const translations = {
+        en: {
+          // Navigation
+          home: "Home",
+          categories: "Categories",
+          cart: "Cart",
+          account: "Account",
+          login: "Login",
+          register: "Register",
+          logout: "Logout",
+
+          // Common sections
+          featured_products: "Featured Products",
+          new_arrivals: "New Arrivals",
+          special_offers: "Special Offers",
+
+          // Product related
+          add_to_cart: "Add to Cart",
+          buy_now: "Buy Now",
+          price: "Price",
+          quantity: "Quantity",
+
+          // Categories
+          textile: "Textile-Based Handicrafts",
+          ceramic: "Clay & Ceramic Handicrafts",
+          metal: "Metal Handicrafts",
+          wood: "Wood & Bamboo Handicrafts",
+          stone: "Stone Handicrafts",
+          jewelry: "Jewelry Handicrafts",
+
+          // Footer
+          about_us: "About Us",
+          contact: "Contact",
+          terms: "Terms & Conditions",
+          privacy: "Privacy Policy",
+          chat_support: "Chat Support",
+          type_message: "Type your message...",
+          send: "Send",
+          listening: "Listening...",
+          bot_typing: "Bot is typing...",
+        },
+        hi: {
+          // Navigation
+          home: "होम",
+          categories: "श्रेणियां",
+          cart: "कार्ट",
+          account: "खाता",
+          login: "लॉग इन",
+          register: "रजिस्टर",
+          logout: "लॉग आउट",
+
+          // Common sections
+          featured_products: "विशेष उत्पाद",
+          new_arrivals: "नई आवक",
+          special_offers: "विशेष ऑफर",
+
+          // Product related
+          add_to_cart: "कार्ट में जोड़ें",
+          buy_now: "अभी खरीदें",
+          price: "मूल्य",
+          quantity: "मात्रा",
+
+          // Categories
+          textile: "कपड़ा आधारित हस्तशिल्प",
+          ceramic: "मिट्टी और सिरेमिक हस्तशिल्प",
+          metal: "धातु हस्तशिल्प",
+          wood: "लकड़ी और बांस हस्तशिल्प",
+          stone: "पत्थर हस्तशिल्प",
+          jewelry: "आभूषण हस्तशिल्प",
+
+          // Footer
+          about_us: "हमारे बारे में",
+          contact: "संपर्क करें",
+          terms: "नियम और शर्तें",
+          privacy: "गोपनीयता नीति",
+          chat_support: "चैट सहायता",
+          type_message: "अपना संदेश टाइप करें...",
+          send: "भेजें",
+          listening: "सुन रहा हूं...",
+          bot_typing: "बॉट टाइप कर रहा है...",
+        },
+      };
+
+      // Function to update page content
+      function updatePageLanguage(language) {
+        document.querySelectorAll("[data-translate]").forEach((element) => {
+          const key = element.getAttribute("data-translate");
+          if (translations[language] && translations[language][key]) {
+            element.textContent = translations[language][key];
+          }
+        });
+
+        // Update HTML lang attribute
+        document.documentElement.lang = language;
+
+        // Store language preference
+        localStorage.setItem("siteLanguage", language);
+        currentLanguage = language;
+
+        // Update font family based on language
+        document.body.style.fontFamily =
+          language === "hi" ? "var(--font-hindi)" : "var(--font-body)";
+
+        // Dispatch event for other components
+        document.dispatchEvent(
+          new CustomEvent("languageChanged", {
+            detail: { language: language },
+          })
+        );
+      }
+
+      // Initialize language on page load
+      document.addEventListener("DOMContentLoaded", () => {
+        updatePageLanguage(currentLanguage);
+      });
+    </script>
+  </head>
+  <body class="{% if request.COOKIES.theme == 'dark' %}dark-theme{% endif %}">
+    <!-- Traditional Corner Decorations -->
+    <div class="traditional-corners">
+      <div class="corner top-left">
+        <svg viewBox="0 0 100 100">
+          <path
+            d="M0,0 C50,0 100,50 100,100 L0,100 Z"
+            fill="var(--accent-color)"
+            opacity="0.1"
+          />
+        </svg>
+      </div>
+      <div class="corner top-right">
+        <svg viewBox="0 0 100 100">
+          <path
+            d="M100,0 C50,0 0,50 0,100 L100,100 Z"
+            fill="var(--accent-color)"
+            opacity="0.1"
+          />
+        </svg>
+      </div>
+      <div class="corner bottom-left">
+        <svg viewBox="0 0 100 100">
+          <path
+            d="M0,100 C50,100 100,50 100,0 L0,0 Z"
+            fill="var(--accent-color)"
+            opacity="0.1"
+          />
+        </svg>
+      </div>
+      <div class="corner bottom-right">
+        <svg viewBox="0 0 100 100">
+          <path
+            d="M100,100 C50,100 0,50 0,0 L100,0 Z"
+            fill="var(--accent-color)"
+            opacity="0.1"
+          />
+        </svg>
+      </div>
+    </div>
+
+   <!-- WhatsApp Popup -->
+<div id="whatsapp-popup" class="popup-overlay">
+  <div class="popup-content">
+      <span class="close-btn" onclick="closePopup()">&times;</span>
+      <h2>🌟 अपना खुद का हस्तशिल्प बाज़ार बनाएं! 🌟</h2>
+      <p>लोकल कलाकारों से जुड़ें, अपने हस्तशिल्प बेचें और अनोखे उत्पाद खरीदें! 🛍️✨</p>
+      <p><strong>💬 अभी चैट करें और जानें कैसे!</strong></p>
+      <a href="https://api.whatsapp.com/send?phone=+911234567890&text=नमस्ते!%20मैं%20हस्तशिल्प%20सेलर%20या%20खरीददार%20बनना%20चाहता%20हूं।"
+         target="_blank" class="whatsapp-btn">
+          <i class="fab fa-whatsapp"></i> WhatsApp पर चैट करें
+      </a>
+  </div>
+</div>
+
+</div>
+
+    <!-- Header with Traditional Pattern -->
+    <header class="main-header">
+      <div class="traditional-border-top"></div>
+      <nav class="nav-container">
+        <div class="logo">
+          <a href="{% url 'core:home' %}">
+            <span class="logo-icon">॥</span>
+            <span class="logo-text">Hand & Soul</span>
+            <span class="logo-icon">॥</span>
+          </a>
+        </div>
+        <div class="nav-toggle" id="navToggle">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+        <ul class="nav-links">
+          <li>
+            <a href="{% url 'core:home' %}" data-translate="home">Home</a>
+          </li>
+          <li>
+            <a
+              href="{% url 'products:category_list' %}"
+              data-translate="categories"
+              >Categories</a
+            >
+          </li>
+          {% if user.is_authenticated %} {% if user.user_type == 'SELLER' %}
+          <li>
+            <a href="{% url 'accounts:seller_dashboard' %}"
+              ><i class="fas fa-store"></i> Dashboard</a
+            >
+          </li>
+          {% else %}
+          <li>
+            <a href="{% url 'accounts:customer_dashboard' %}"
+              ><i class="fas fa-user"></i> My Account</a
+            >
+          </li>
+          {% endif %}
+          <li class="nav-cart">
+            <a
+              href="{% url 'products:cart' %}"
+              data-translate="cart"
+              class="cart-link"
+            >
+              <i class="fas fa-shopping-cart"></i>
+              <span class="cart-counter"
+                >{{ request.user.cart.total_items|default:0 }}</span
+              >
+            </a>
+          </li>
+          <li class="nav-user">
+            <div class="user-menu">
+              <button class="user-menu-btn">
+                <i class="fas fa-user-circle"></i>
+                <span>{{ user.username }}</span>
+                <i class="fas fa-chevron-down"></i>
+              </button>
+              <div class="dropdown-menu">
+                {% if user.user_type == 'CUSTOMER' %}
+                <a href="{% url 'accounts:customer_dashboard' %}">
+                  <i class="fas fa-user-circle"></i> My Account
+                </a>
+                {% endif %}
+                <a href="{% url 'accounts:profile' %}">
+                  <i class="fas fa-cog"></i> Settings
+                </a>
+                <a href="{% url 'accounts:logout' %}">
+                  <i class="fas fa-sign-out-alt"></i> Logout
+                </a>
+              </div>
+            </div>
+          </li>
+          {% else %}
+          <li>
+            <a href="{% url 'accounts:login' %}"
+              ><i class="fas fa-sign-in-alt"></i> Login</a
+            >
+          </li>
+          <li>
+            <a href="{% url 'accounts:register' %}" class="btn btn-primary"
+              ><i class="fas fa-user-plus"></i> Register</a
+            >
+          </li>
+          {% endif %}
+        </ul>
+        <div class="theme-toggle">
+          <button id="themeToggle" title="Switch theme">
+            <i class="fas fa-moon dark-icon"></i>
+            <i class="fas fa-sun light-icon"></i>
+          </button>
+        </div>
+        <div class="language-switcher">
+          <button
+            id="globalLanguageToggle"
+            class="language-toggle-btn"
+            onclick="toggleSiteLanguage()"
+          >
+            <span class="current-lang">EN</span>
+            <span class="separator">|</span>
+            <span class="other-lang">हिंदी</span>
+          </button>
+        </div>
+      </nav>
+      <div class="traditional-border-bottom"></div>
+    </header>
+
+    <!-- Main Content with Traditional Border -->
+    <main class="main-content">
+      <div class="traditional-pattern-overlay"></div>
+      {% if messages %}
+      <div class="messages">
+        {% for message in messages %}
+        <div class="message {{ message.tags }}">
+          <div class="message-icon">
+            {% if message.tags == 'success' %}
+            <i class="fas fa-check-circle"></i>
+            {% elif message.tags == 'error' %}
+            <i class="fas fa-exclamation-circle"></i>
+            {% elif message.tags == 'warning' %}
+            <i class="fas fa-exclamation-triangle"></i>
+            {% else %}
+            <i class="fas fa-info-circle"></i>
+            {% endif %}
+          </div>
+          {{ message }}
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %} {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer with Traditional Design -->
+    <footer class="main-footer">
+      <div class="traditional-border-top"></div>
+      <div class="footer-content">
+        <div class="footer-section">
+          <h3 data-translate="about_us">About Us</h3>
+          <p data-translate="about_description">
+            Connecting artisans with customers worldwide, preserving and
+            promoting traditional crafts.
+          </p>
+          <div class="traditional-separator"></div>
+        </div>
+        <div class="footer-section">
+          <h3><i class="fas fa-link"></i> Quick Links</h3>
+          <ul class="traditional-list">
+            <li><a href="{% url 'core:home' %}">Home</a></li>
+            <li><a href="{% url 'core:about' %}">About</a></li>
+            <li><a href="{% url 'core:contact' %}">Contact</a></li>
+            <li><a href="{% url 'core:terms' %}">Terms & Conditions</a></li>
+          </ul>
+        </div>
+        <div class="footer-section">
+          <h3><i class="fas fa-address-book"></i> Contact Us</h3>
+          <p><i class="fas fa-envelope"></i> support@handicraftmarket.com</p>
+          <p><i class="fas fa-phone"></i> +1 234 567 890</p>
+          <div class="social-links">
+            <a href="#" title="Facebook" class="traditional-icon"
+              ><i class="fab fa-facebook"></i
+            ></a>
+            <a href="#" title="Instagram" class="traditional-icon"
+              ><i class="fab fa-instagram"></i
+            ></a>
+            <a href="#" title="Twitter" class="traditional-icon"
+              ><i class="fab fa-twitter"></i
+            ></a>
+            <a href="#" title="Pinterest" class="traditional-icon"
+              ><i class="fab fa-pinterest"></i
+            ></a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <div class="traditional-border"></div>
+        <p>&copy; {% now "Y" %} Handicraft Market. All rights reserved.</p>
+        <div class="footer-decoration">
+          <span>॥</span>
+          <span>❈</span>
+          <span>॥</span>
+        </div>
+      </div>
+      <div class="traditional-border-bottom"></div>
+    </footer>
+
+    <!-- Move chatbot include just before closing body tag -->
+    <div id="chatbot-container">{% include 'includes/chatbot.html' %}</div>
+
+    <!-- Load your scripts -->
+    <script src="{% static 'js/theme.js' %}"></script>
+    <script src="{% static 'js/main.js' %}"></script>
+    <script src="{% static 'js/cart.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+
+    <!-- Update the script section -->
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        // Get all required elements
+        const chatButton = document.getElementById("chatButton");
+        const chatContainer = document.getElementById("chatContainer");
+        const chatInput = document.getElementById("chatInput");
+        const sendButton = document.getElementById("sendMessage");
+        const chatMessages = document.getElementById("chatMessages");
+        const voiceBtn = document.getElementById("voiceControlBtn");
+        const voiceOutputBtn = document.getElementById("voiceOutputBtn");
+
+        let isListening = false;
+        let isVoiceOutputEnabled = true;
+        let currentUtterance = null;
+
+        if (!chatButton || !chatContainer) {
+          console.error("Chatbot elements not found!");
+          return;
+        }
+
+        // Add this function for adding messages
+        function addMessage(text, className) {
+          const messageDiv = document.createElement("div");
+          messageDiv.className = `message ${className}`;
+          messageDiv.innerHTML = text.replace(/\n/g, "<br>");
+          chatMessages.appendChild(messageDiv);
+          chatMessages.scrollTop = chatMessages.scrollHeight;
+
+          // Save chat history
+          saveChatState();
+        }
+
+        // Add this function to save chat state
+        function saveChatState() {
+          const messages = Array.from(chatMessages.children).map((msg) => ({
+            text: msg.innerHTML,
+            type: msg.classList.contains("user-message") ? "user" : "bot",
+          }));
+          localStorage.setItem("chatHistory", JSON.stringify(messages));
+        }
+
+        // Add this function to load chat state
+        function loadChatState() {
+          const savedMessages = localStorage.getItem("chatHistory");
+          if (savedMessages) {
+            const messages = JSON.parse(savedMessages);
+            messages.forEach((msg) => {
+              addMessage(
+                msg.text,
+                msg.type === "user" ? "user-message" : "bot-message"
+              );
+            });
+          }
+        }
+
+        // Improve the getBotResponse function
+        function getBotResponse(message) {
+          message = message.toLowerCase();
+
+          // Navigation commands
+          if (
+            message.includes("go to") ||
+            message.includes("open") ||
+            message.includes("show")
+          ) {
+            if (message.includes("home")) {
+              window.location.href = "{% url 'core:home' %}";
+              return "Navigating to home page...";
+            } else if (message.includes("categories")) {
+              window.location.href = "{% url 'products:category_list' %}";
+              return "Opening categories...";
+            } else if (message.includes("cart")) {
+              window.location.href = "{% url 'products:cart' %}";
+              return "Opening your cart...";
+            }
+          }
+
+          // Regular queries
+          if (message.includes("hello") || message.includes("hi")) {
+            return "Hello! How can I help you today? 👋";
+          } else if (
+            message.includes("register") ||
+            message.includes("sign up")
+          ) {
+            return "To register as a seller, you'll need:\n1. Valid ID proof\n2. Active bank account\n3. Product images\n4. GST registration (if applicable)";
+          } else if (message.includes("payment") || message.includes("fees")) {
+            return "Our payment process is simple:\n• 5% commission per sale\n• No monthly fees\n• Weekly payments\n• Secure transactions";
+          } else if (
+            message.includes("delivery") ||
+            message.includes("shipping")
+          ) {
+            return "We offer delivery across India. Shipping typically takes 3-7 business days depending on location.";
+          } else if (message.includes("help")) {
+            return "I can help you with:\n• Registration process\n• Payment information\n• Shipping details\n• Product listings\n• Navigation commands";
+          }
+
+          return "I'm here to help! Try asking about:\n• Registration\n• Payments\n• Shipping\n• Products\nOr say 'help' for more options.";
+        }
+
+        // Initialize chat
+        try {
+          // Load saved chat history
+          loadChatState();
+
+          // Add clear chat functionality
+          const clearChatBtn = document.getElementById("clearChatBtn");
+          if (clearChatBtn) {
+            clearChatBtn.addEventListener("click", function () {
+              chatMessages.innerHTML = "";
+              localStorage.removeItem("chatHistory");
+              addMessage(
+                "Chat history cleared. How can I help you?",
+                "bot-message"
+              );
+            });
+          }
+
+          // Improve voice recognition error handling
+          if (
+            "webkitSpeechRecognition" in window ||
+            "SpeechRecognition" in window
+          ) {
+            const recognition = new (window.webkitSpeechRecognition ||
+              window.SpeechRecognition)();
+            recognition.continuous = false;
+            recognition.interimResults = false;
+
+            recognition.onerror = function (event) {
+              if (event.error === "not-allowed") {
+                addMessage(
+                  "Please allow microphone access to use voice commands.",
+                  "bot-message"
+                );
+              } else {
+                addMessage(
+                  "Voice input error. Please try again or type your message.",
+                  "bot-message"
+                );
+              }
+              voiceBtn.classList.remove("listening");
+            };
+
+            // Improve voice output
+            function speakText(text) {
+              if (!isVoiceOutputEnabled || !window.speechSynthesis) return;
+
+              // Cancel any ongoing speech
+              speechSynthesis.cancel();
+
+              const cleanText = text
+                .replace(/<[^>]*>/g, "")
+                .replace(/[^\w\s.,!?-]/g, "")
+                .trim();
+              if (!cleanText) return;
+
+              const utterance = new SpeechSynthesisUtterance(cleanText);
+              utterance.lang = "en-US";
+              utterance.rate = 1;
+              utterance.pitch = 1;
+              speechSynthesis.speak(utterance);
+            }
+          }
+
+          console.log("Chatbot initialized successfully with all features");
+        } catch (error) {
+          console.error("Error initializing chatbot:", error);
+        }
+      });
+    </script>
+    <script>
+      // Global language management
+      function toggleSiteLanguage() {
+        const newLanguage = currentLanguage === "en" ? "hi" : "en";
+        updatePageLanguage(newLanguage);
+      }
+
+      function updatePageLanguage(language) {
+        // Update all translatable elements
+        document.querySelectorAll("[data-translate]").forEach((element) => {
+          const key = element.getAttribute("data-translate");
+          if (translations[language] && translations[language][key]) {
+            element.textContent = translations[language][key];
+          }
+        });
+
+        // Update HTML lang attribute
+        document.documentElement.lang = language;
+
+        // Update font family for the entire site
+        document.body.style.fontFamily =
+          language === "hi" ? "var(--font-hindi)" : "var(--font-body)";
+
+        // Update language toggle button text
+        const langBtn = document.getElementById("globalLanguageToggle");
+        if (langBtn) {
+          langBtn.querySelector(".current-lang").textContent =
+            language.toUpperCase();
+          langBtn.querySelector(".other-lang").textContent =
+            language === "en" ? "हिंदी" : "EN";
+        }
+
+        // Store language preference
+        localStorage.setItem("siteLanguage", language);
+        currentLanguage = language;
+
+        // Notify all components about language change
+        document.dispatchEvent(
+          new CustomEvent("languageChanged", {
+            detail: { language: language },
+          })
+        );
+      }
+
+      // Initialize language on page load
+      document.addEventListener("DOMContentLoaded", function () {
+        // Get stored language preference or default to English
+        const savedLanguage = localStorage.getItem("siteLanguage") || "en";
+        updatePageLanguage(savedLanguage);
+      });
+    </script>
+  </body>
+</html>

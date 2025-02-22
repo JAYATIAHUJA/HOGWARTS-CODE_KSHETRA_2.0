@@ -1,0 +1,124 @@
+{% extends 'base.html' %} {% load static %} {% block content %}
+<div class="event-detail-container">
+  <!-- Event Header -->
+  <div class="event-header">
+    <h1>{{ event.title }}</h1>
+    <div class="event-main-image">
+      {% if event.main_image %}
+      <img src="{{ event.main_image.url }}" alt="{{ event.title }}" />
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Event Info -->
+  <div class="event-info">
+    <div class="date-time">
+      <h3>Date & Time</h3>
+      <p>{{ event.date_time }}</p>
+    </div>
+
+    <div class="location">
+      <h3>Location</h3>
+      <p>{{ event.location }}</p>
+      {% if event.location_map_link %}
+      <iframe
+        src="{{ event.location_map_link }}"
+        width="100%"
+        height="300"
+        frameborder="0"
+      ></iframe>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Ticket Booking Section -->
+  <div class="ticket-section">
+    <h2>Book Tickets</h2>
+    {% for ticket in event.ticket_types.all %}
+    <div class="ticket-type">
+      <h3>{{ ticket.name }}</h3>
+      <p>Price: ${{ ticket.price }}</p>
+      <p>Available: {{ ticket.quantity_available }}</p>
+      {% if ticket.quantity_available > 0 %}
+      <form
+        action="{% url 'events:book_ticket' event.id ticket.id %}"
+        method="POST"
+      >
+        {% csrf_token %}
+        <input
+          type="number"
+          name="quantity"
+          min="1"
+          max="{{ ticket.quantity_available }}"
+          value="1"
+        />
+        <button type="submit" class="btn btn-primary">Book Now</button>
+      </form>
+      {% else %}
+      <p class="sold-out">Sold Out</p>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- Description -->
+  <div class="description">
+    <h2>About the Event</h2>
+    {{ event.description|linebreaks }}
+  </div>
+
+  <!-- Organizer Info -->
+  <div class="organizer-info">
+    <h2>Organizer Details</h2>
+    <p>Organized by: {{ event.organizer.get_full_name }}</p>
+    {% if event.organizer_website %}
+    <p>
+      Website:
+      <a href="{{ event.organizer_website }}">{{ event.organizer_website }}</a>
+    </p>
+    {% endif %} {% if event.organizer_phone %}
+    <p>Contact: {{ event.organizer_phone }}</p>
+    {% endif %}
+  </div>
+
+  <!-- Reviews Section -->
+  <div class="reviews">
+    <h2>Reviews</h2>
+    {% for review in event.eventreview_set.all %}
+    <div class="review">
+      <div class="rating">
+        {% for i in "12345" %} {% if forloop.counter <= review.rating %} ⭐ {%
+        endif %} {% endfor %}
+      </div>
+      <p>{{ review.comment }}</p>
+      <small>By {{ review.user.username }} on {{ review.created_at }}</small>
+    </div>
+    {% empty %}
+    <p>No reviews yet.</p>
+    {% endfor %}
+  </div>
+
+  <!-- Social Sharing -->
+  <div class="social-share">
+    <h3>Share this event</h3>
+    <a
+      href="https://wa.me/?text={{ event.title|urlencode }}%20-%20{{ request.build_absolute_uri }}"
+      class="share-btn whatsapp"
+      >Share on WhatsApp</a
+    >
+    <a
+      href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri }}"
+      class="share-btn facebook"
+      >Share on Facebook</a
+    >
+  </div>
+
+  <!-- FAQs -->
+  {% if event.faq %}
+  <div class="faqs">
+    <h2>Frequently Asked Questions</h2>
+    {{ event.faq|linebreaks }}
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

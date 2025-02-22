@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Shopping Cart - Handicraft Market{% endblock %}
+
+{% block content %}
+<div class="cart-container">
+    <div class="cart-header">
+        <h1>Shopping Cart</h1>
+        <span>{{ cart.total_items }} item{% if cart.total_items != 1 %}s{% endif %}</span>
+    </div>
+
+    {% if cart.items.all %}
+    <div class="cart-content">
+        <div class="cart-items">
+            {% for item in cart.items.all %}
+            <div class="cart-item" id="cart-item-{{ item.id }}">
+                <img src="{{ item.product.main_image.url }}" 
+                     alt="{{ item.product.name }}" 
+                     class="cart-item-image">
+                
+                <div class="cart-item-details">
+                    <h3>{{ item.product.name }}</h3>
+                    <p class="seller">by {{ item.product.seller.business_name }}</p>
+                    {% if item.product.stock < 5 %}
+                    <p class="stock-warning">Only {{ item.product.stock }} left in stock</p>
+                    {% endif %}
+                </div>
+
+                <div class="cart-item-price">
+                    ${{ item.product.price }}
+                </div>
+
+                <div class="quantity-controls">
+                    <button class="quantity-btn minus" onclick="updateQuantity({{ item.id }}, -1)">-</button>
+                    <input type="number" 
+                           class="cart-quantity" 
+                           value="{{ item.quantity }}" 
+                           min="1" 
+                           max="{{ item.product.stock }}"
+                           data-item-id="{{ item.id }}">
+                    <button class="quantity-btn plus" onclick="updateQuantity({{ item.id }}, 1)">+</button>
+                </div>
+
+                <div class="cart-item-subtotal" id="item-subtotal-{{ item.id }}">
+                    ${{ item.subtotal }}
+                </div>
+
+                <button class="remove-item-btn" 
+                        data-item-id="{{ item.id }}"
+                        aria-label="Remove {{ item.product.name }} from cart">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="cart-summary">
+            <div class="cart-summary-row">
+                <span>Subtotal</span>
+                <span class="cart-subtotal">${{ cart.subtotal }}</span>
+            </div>
+            <div class="cart-summary-row">
+                <span>Shipping</span>
+                <span>Calculated at checkout</span>
+            </div>
+            <div class="cart-summary-row cart-total-row">
+                <span>Total</span>
+                <span class="cart-total">${{ cart.total }}</span>
+            </div>
+            <div class="cart-actions">
+                <a href="{% url 'products:product_list' %}" class="btn btn-outline">
+                    <i class="fas fa-arrow-left"></i> Continue Shopping
+                </a>
+                <a href="{% url 'checkout' %}" class="btn btn-primary">
+                    Proceed to Checkout <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="empty-cart">
+        <h2>Your cart is empty</h2>
+        <p>Looks like you haven't added any items to your cart yet.</p>
+        <a href="{% url 'products:product_list' %}" class="btn btn-primary">
+            Start Shopping
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+{% if recommended_products %}
+<div class="recommended-products">
+    <h2>Recommended for You</h2>
+    <div class="products-grid">
+        {% for product in recommended_products %}
+        <div class="product-card">
+            <a href="{{ product.get_absolute_url }}">
+                <img src="{{ product.main_image.url }}" alt="{{ product.name }}">
+                <h3>{{ product.name }}</h3>
+                <p class="price">${{ product.price }}</p>
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function updateQuantity(itemId, change) {
+    const input = document.querySelector(`input[data-item-id="${itemId}"]`);
+    const newQuantity = parseInt(input.value) + change;
+    if (newQuantity >= 1 && newQuantity <= parseInt(input.max)) {
+        input.value = newQuantity;
+        updateCartItem(itemId, newQuantity);
+    }
+}
+</script>
+{% endblock %} 

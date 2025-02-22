@@ -1,0 +1,21 @@
+.speech-control-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 20px;
+  border: none;
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.speech-control-btn:hover {
+  background-color: #0056b3;
+}
+
+.speech-control-btn:focus {
+  outline: 2px solid #0056b3;
+  outline-offset: 2px;
+} 

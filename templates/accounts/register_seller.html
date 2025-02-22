@@ -1,0 +1,1019 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Become a Seller - Handicraft Market{% endblock %}
+
+{% block extra_css %}
+<style>
+    .seller-registration-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+    }
+
+    .hero-section {
+        text-align: center;
+        margin-bottom: 4rem;
+        padding: 3rem 1rem;
+        background: linear-gradient(rgba(var(--primary-color-rgb), 0.05), rgba(var(--primary-color-rgb), 0.1));
+        border-radius: 12px;
+    }
+
+    .hero-section h1 {
+        font-size: 2.5rem;
+        color: var(--primary-color);
+        margin-bottom: 1rem;
+    }
+
+    .hero-section p {
+        font-size: 1.1rem;
+        color: var(--text-secondary);
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .benefits-section {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 2rem;
+        margin-bottom: 4rem;
+    }
+
+    .benefit-card {
+        background: var(--surface-color);
+        padding: 1.5rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px var(--shadow-color);
+        text-align: center;
+        transition: transform 0.3s ease;
+    }
+
+    .benefit-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .benefit-icon {
+        font-size: 2.5rem;
+        color: var(--primary-color);
+        margin-bottom: 1rem;
+    }
+
+    .benefit-title {
+        font-size: 1.2rem;
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+    }
+
+    .benefit-description {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+    }
+
+    .registration-section {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 4rem;
+        align-items: start;
+    }
+
+    .registration-form {
+        background: var(--surface-color);
+        padding: 2.5rem;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px var(--shadow-color);
+    }
+
+    .form-header {
+        text-align: center;
+        margin-bottom: 2.5rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 2px solid var(--border-color);
+    }
+
+    .form-header h2 {
+        color: var(--primary-color);
+        font-size: 1.75rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .form-header p {
+        color: var(--text-secondary);
+    }
+
+    .form-section {
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .form-section:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+        padding-bottom: 0;
+    }
+
+    .section-title {
+        font-size: 1.1rem;
+        color: var(--text-primary);
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .section-title i {
+        color: var(--primary-color);
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+        position: relative;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        color: var(--text-primary);
+        font-weight: 500;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border: 2px solid var(--border-color);
+        border-radius: 6px;
+        background-color: var(--background-color);
+        color: var(--text-primary);
+        transition: all 0.3s ease;
+        font-size: 1rem;
+    }
+
+    .form-control:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(var(--primary-color-rgb), 0.1);
+    }
+
+    .help-text {
+        display: block;
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+        margin-top: 0.25rem;
+    }
+
+    .error-message {
+        color: var(--error-color);
+        font-size: 0.85rem;
+        margin-top: 0.25rem;
+    }
+
+    .form-tooltip {
+        position: absolute;
+        right: 0.5rem;
+        top: 0.5rem;
+        color: var(--text-secondary);
+        cursor: help;
+    }
+
+    .form-tooltip:hover::after {
+        content: attr(data-tooltip);
+        position: absolute;
+        right: 100%;
+        top: 50%;
+        transform: translateY(-50%);
+        background: var(--surface-color);
+        padding: 0.5rem 1rem;
+        border-radius: 4px;
+        box-shadow: 0 2px 4px var(--shadow-color);
+        width: max-content;
+        max-width: 200px;
+        margin-right: 10px;
+        z-index: 1;
+        font-size: 0.85rem;
+    }
+
+    .submit-btn {
+        width: 100%;
+        padding: 1rem;
+        background-color: var(--primary-color);
+        color: white;
+        border: none;
+        border-radius: 6px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-top: 1rem;
+    }
+
+    .submit-btn:hover {
+        background-color: var(--accent-color);
+        transform: translateY(-1px);
+    }
+
+    .submit-btn:active {
+        transform: translateY(0);
+    }
+
+    .password-strength {
+        height: 4px;
+        background: var(--border-color);
+        border-radius: 2px;
+        margin-top: 0.5rem;
+        overflow: hidden;
+    }
+
+    .password-strength-bar {
+        height: 100%;
+        width: 0;
+        transition: width 0.3s ease, background-color 0.3s ease;
+    }
+
+    .strength-weak { width: 33%; background-color: var(--error-color); }
+    .strength-medium { width: 66%; background-color: var(--warning-color); }
+    .strength-strong { width: 100%; background-color: var(--success-color); }
+
+    .info-section {
+        background: var(--surface-color);
+        padding: 2rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px var(--shadow-color);
+    }
+
+    .info-section h3 {
+        color: var(--text-primary);
+        margin-bottom: 1rem;
+    }
+
+    .requirements-list {
+        list-style: none;
+        padding: 0;
+    }
+
+    .requirements-list li {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+        color: var(--text-secondary);
+    }
+
+    .requirements-list i {
+        color: var(--success-color);
+    }
+
+    .testimonials {
+        margin-top: 4rem;
+        text-align: center;
+    }
+
+    .testimonial-card {
+        background: var(--surface-color);
+        padding: 2rem;
+        border-radius: 8px;
+        margin: 1rem;
+        box-shadow: 0 2px 4px var(--shadow-color);
+    }
+
+    .testimonial-text {
+        font-style: italic;
+        color: var(--text-secondary);
+        margin-bottom: 1rem;
+    }
+
+    .testimonial-author {
+        font-weight: 500;
+        color: var(--text-primary);
+    }
+
+    .chat-widget {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 1000;
+    }
+
+    .chat-button {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background-color: var(--primary-color);
+        color: white;
+        border: none;
+        cursor: pointer;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        transition: transform 0.3s ease;
+    }
+
+    .chat-button:hover {
+        transform: scale(1.1);
+    }
+
+    .chat-container {
+        position: fixed;
+        bottom: 90px;
+        right: 20px;
+        width: 350px;
+        height: 500px;
+        background: var(--surface-color);
+        border-radius: 12px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        display: none;
+        flex-direction: column;
+        overflow: hidden;
+    }
+
+    .chat-container.active {
+        display: flex;
+    }
+
+    .chat-header {
+        background: var(--primary-color);
+        color: white;
+        padding: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .chat-header h3 {
+        margin: 0;
+        font-size: 1.1rem;
+    }
+
+    .language-toggle {
+        background: rgba(255, 255, 255, 0.2);
+        border: none;
+        padding: 0.3rem 0.6rem;
+        border-radius: 4px;
+        color: white;
+        cursor: pointer;
+        font-size: 0.9rem;
+    }
+
+    .chat-messages {
+        flex-grow: 1;
+        padding: 1rem;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .message {
+        max-width: 80%;
+        padding: 0.8rem 1rem;
+        border-radius: 12px;
+        font-size: 0.9rem;
+        line-height: 1.4;
+    }
+
+    .bot-message {
+        background: var(--background-color);
+        color: var(--text-primary);
+        align-self: flex-start;
+        border-bottom-left-radius: 4px;
+    }
+
+    .user-message {
+        background: var(--primary-color);
+        color: white;
+        align-self: flex-end;
+        border-bottom-right-radius: 4px;
+    }
+
+    .chat-input {
+        padding: 1rem;
+        border-top: 1px solid var(--border-color);
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .chat-input input {
+        flex-grow: 1;
+        padding: 0.75rem;
+        border: 1px solid var(--border-color);
+        border-radius: 4px;
+        font-size: 0.9rem;
+    }
+
+    .chat-input button {
+        padding: 0.75rem 1rem;
+        background: var(--primary-color);
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .chat-input button:hover {
+        background: var(--accent-color);
+    }
+
+    .chat-suggestions {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        margin-top: 0.5rem;
+    }
+
+    .suggestion-chip {
+        background: rgba(var(--primary-color-rgb), 0.1);
+        color: var(--primary-color);
+        padding: 0.4rem 0.8rem;
+        border-radius: 16px;
+        font-size: 0.85rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border: 1px solid rgba(var(--primary-color-rgb), 0.2);
+    }
+
+    .suggestion-chip:hover {
+        background: rgba(var(--primary-color-rgb), 0.2);
+    }
+
+    .typing-indicator {
+        display: flex;
+        gap: 0.3rem;
+        padding: 0.5rem;
+        align-items: center;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .typing-indicator.active {
+        opacity: 1;
+    }
+
+    .typing-dot {
+        width: 6px;
+        height: 6px;
+        background: var(--text-secondary);
+        border-radius: 50%;
+        animation: typing 1.4s infinite;
+    }
+
+    .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes typing {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-4px); }
+    }
+
+    .chat-input-container {
+        position: relative;
+    }
+
+    .chat-placeholder {
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-secondary);
+        pointer-events: none;
+        transition: all 0.3s ease;
+        font-size: 0.9rem;
+    }
+
+    .chat-input:focus + .chat-placeholder,
+    .chat-input:not(:placeholder-shown) + .chat-placeholder {
+        opacity: 0;
+    }
+
+    @media (max-width: 768px) {
+        .registration-section {
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+
+        .hero-section h1 {
+            font-size: 2rem;
+        }
+
+        .chat-container {
+            width: calc(100% - 40px);
+            height: 60vh;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="seller-registration-container">
+    <!-- Hero Section -->
+    <div class="hero-section">
+        <h1>Start Selling on Handicraft Market</h1>
+        <p>Join our community of artisans and reach customers worldwide. Turn your craft into a thriving business.</p>
+    </div>
+
+    <!-- Benefits Section -->
+    <div class="benefits-section">
+        <div class="benefit-card">
+            <div class="benefit-icon">
+                <i class="fas fa-globe"></i>
+            </div>
+            <h3 class="benefit-title">Global Reach</h3>
+            <p class="benefit-description">Connect with customers worldwide and expand your market presence.</p>
+        </div>
+        <div class="benefit-card">
+            <div class="benefit-icon">
+                <i class="fas fa-wallet"></i>
+            </div>
+            <h3 class="benefit-title">Easy Payments</h3>
+            <p class="benefit-description">Secure payment processing and quick settlements to your account.</p>
+        </div>
+        <div class="benefit-card">
+            <div class="benefit-icon">
+                <i class="fas fa-chart-line"></i>
+            </div>
+            <h3 class="benefit-title">Business Growth</h3>
+            <p class="benefit-description">Tools and insights to help you grow your handicraft business.</p>
+        </div>
+    </div>
+
+    <!-- Registration Section -->
+    <div class="registration-section">
+        <div class="registration-form">
+            <div class="form-header">
+                <h2>Create Your Seller Account</h2>
+                <p>Join our community of artisans and start selling your crafts</p>
+            </div>
+            <form method="POST" novalidate>
+                {% csrf_token %}
+
+                <!-- Personal Information Section -->
+                <div class="form-section">
+                    <h3 class="section-title">
+                        <i class="fas fa-user"></i>
+                        Personal Information
+                    </h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="{{ form.first_name.id_for_label }}">First Name</label>
+                            {{ form.first_name }}
+                            {% if form.first_name.help_text %}
+                                <small class="help-text">{{ form.first_name.help_text }}</small>
+                            {% endif %}
+                            {% if form.first_name.errors %}
+                                <div class="error-message">{{ form.first_name.errors }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ form.last_name.id_for_label }}">Last Name</label>
+                            {{ form.last_name }}
+                            {% if form.last_name.errors %}
+                                <div class="error-message">{{ form.last_name.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ form.email.id_for_label }}">Email Address</label>
+                        {{ form.email }}
+                        <i class="fas fa-info-circle form-tooltip" data-tooltip="We'll send important updates and notifications to this email"></i>
+                        {% if form.email.errors %}
+                            <div class="error-message">{{ form.email.errors }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ form.phone_number.id_for_label }}">Phone Number</label>
+                        {{ form.phone_number }}
+                        <i class="fas fa-info-circle form-tooltip" data-tooltip="For order notifications and customer support"></i>
+                        {% if form.phone_number.errors %}
+                            <div class="error-message">{{ form.phone_number.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Business Information Section -->
+                <div class="form-section">
+                    <h3 class="section-title">
+                        <i class="fas fa-store"></i>
+                        Business Information
+                    </h3>
+                    <div class="form-group">
+                        <label for="{{ form.business_name.id_for_label }}">Business Name</label>
+                        {{ form.business_name }}
+                        <i class="fas fa-info-circle form-tooltip" data-tooltip="This will be your shop name on the platform"></i>
+                        {% if form.business_name.errors %}
+                            <div class="error-message">{{ form.business_name.errors }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ form.business_description.id_for_label }}">Business Description</label>
+                        {{ form.business_description }}
+                        <small class="help-text">Tell customers about your craft and what makes your products special</small>
+                        {% if form.business_description.errors %}
+                            <div class="error-message">{{ form.business_description.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Account Security Section -->
+                <div class="form-section">
+                    <h3 class="section-title">
+                        <i class="fas fa-lock"></i>
+                        Account Security
+                    </h3>
+                    <div class="form-group">
+                        <label for="{{ form.username.id_for_label }}">Username</label>
+                        {{ form.username }}
+                        <i class="fas fa-info-circle form-tooltip" data-tooltip="Choose a unique username for your account"></i>
+                        {% if form.username.errors %}
+                            <div class="error-message">{{ form.username.errors }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ form.password1.id_for_label }}">Password</label>
+                        {{ form.password1 }}
+                        <div class="password-strength">
+                            <div class="password-strength-bar"></div>
+                        </div>
+                        <small class="help-text">
+                            Password must be at least 8 characters long and include letters, numbers, and special characters
+                        </small>
+                        {% if form.password1.errors %}
+                            <div class="error-message">{{ form.password1.errors }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ form.password2.id_for_label }}">Confirm Password</label>
+                        {{ form.password2 }}
+                        {% if form.password2.errors %}
+                            <div class="error-message">{{ form.password2.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <button type="submit" class="submit-btn">
+                    <i class="fas fa-store"></i>
+                    Create Seller Account
+                </button>
+            </form>
+        </div>
+
+        <div class="info-section">
+            <h3>Requirements to Sell</h3>
+            <ul class="requirements-list">
+                <li><i class="fas fa-check-circle"></i> Valid ID proof</li>
+                <li><i class="fas fa-check-circle"></i> Bank account for payments</li>
+                <li><i class="fas fa-check-circle"></i> High-quality product images</li>
+                <li><i class="fas fa-check-circle"></i> Accurate product descriptions</li>
+                <li><i class="fas fa-check-circle"></i> Professional communication</li>
+            </ul>
+
+            <h3>What Happens Next?</h3>
+            <ol class="steps-list">
+                <li>Complete the registration form</li>
+                <li>Verify your email address</li>
+                <li>Submit KYC documents</li>
+                <li>Set up your shop profile</li>
+                <li>Start listing your products</li>
+            </ol>
+        </div>
+    </div>
+
+    <!-- Testimonials Section -->
+    <div class="testimonials">
+        <h2>What Our Sellers Say</h2>
+        <div class="testimonial-card">
+            <p class="testimonial-text">"Joining Handicraft Market was the best decision for my business. The platform has helped me reach customers I never thought possible."</p>
+            <p class="testimonial-author">- Kamla Devi, Handmade Jewelry</p>
+        </div>
+    </div>
+
+    <!-- Chat Widget -->
+    <div class="chat-widget">
+        <button class="chat-button" id="chatButton">
+            <i class="fas fa-comments"></i>
+        </button>
+        <div class="chat-container" id="chatContainer">
+            <div class="chat-header">
+                <h3>Seller Support</h3>
+                <button class="language-toggle" id="languageToggle">EN | हिंदी</button>
+            </div>
+            <div class="chat-messages" id="chatMessages">
+                <div class="message bot-message">
+                    <span class="en-text">Hello! How can I help you with seller registration today? 👋</span>
+                    <br><br>
+                    <span class="hi-text">नमस्ते! मैं आपकी विक्रेता पंजीकरण में कैसे मदद कर सकता हूं? 🙏</span>
+                </div>
+                <div class="chat-suggestions">
+                    <span class="suggestion-chip">Registration requirements</span>
+                    <span class="suggestion-chip">Payment process</span>
+                    <span class="suggestion-chip">Platform fees</span>
+                    <span class="suggestion-chip">Support channels</span>
+                </div>
+            </div>
+            <div class="typing-indicator">
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+            </div>
+            <div class="chat-input">
+                <div class="chat-input-container">
+                    <input type="text" id="chatInput" placeholder=" ">
+                    <span class="chat-placeholder" id="chatPlaceholder">Type your message...</span>
+                </div>
+                <button id="sendMessage">
+                    <i class="fas fa-paper-plane"></i>
+                    Send
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+{{ block.super }}
+<script>
+    // Password strength indicator
+    const passwordInput = document.querySelector('input[type="password"]');
+    const strengthBar = document.querySelector('.password-strength-bar');
+
+    passwordInput.addEventListener('input', function() {
+        const password = this.value;
+        let strength = 0;
+        
+        if (password.length >= 8) strength++;
+        if (password.match(/[a-z]/) && password.match(/[A-Z]/)) strength++;
+        if (password.match(/[0-9]/)) strength++;
+        if (password.match(/[^a-zA-Z0-9]/)) strength++;
+
+        strengthBar.className = 'password-strength-bar';
+        if (strength >= 4) {
+            strengthBar.classList.add('strength-strong');
+        } else if (strength >= 2) {
+            strengthBar.classList.add('strength-medium');
+        } else if (strength >= 1) {
+            strengthBar.classList.add('strength-weak');
+        }
+    });
+
+    // Form validation and submission
+    const form = document.querySelector('form');
+    form.addEventListener('submit', function(e) {
+        let isValid = true;
+        const requiredFields = form.querySelectorAll('input[required]');
+        
+        requiredFields.forEach(field => {
+            if (!field.value.trim()) {
+                isValid = false;
+                field.classList.add('error');
+            } else {
+                field.classList.remove('error');
+            }
+        });
+
+        if (!isValid) {
+            e.preventDefault();
+            alert('Please fill in all required fields');
+        }
+    });
+
+    // Enhanced chatbot functionality
+    const chatButton = document.getElementById('chatButton');
+    const chatContainer = document.getElementById('chatContainer');
+    const chatMessages = document.getElementById('chatMessages');
+    const chatInput = document.getElementById('chatInput');
+    const sendMessage = document.getElementById('sendMessage');
+    const languageToggle = document.getElementById('languageToggle');
+    const typingIndicator = document.querySelector('.typing-indicator');
+
+    let currentLanguage = 'en';
+    let isTyping = false;
+
+    // Enhanced responses with more context and variations
+    const responses = {
+        en: {
+            greeting: [
+                "Hello! How can I help you with seller registration today? 👋",
+                "Welcome to Handicraft Market! How may I assist you with becoming a seller? 👋",
+                "Hi there! Looking to start selling your crafts? I'm here to help! 👋"
+            ],
+            requirements: {
+                keywords: ["require", "need", "document", "necessary", "start", "begin", "registration", "register"],
+                responses: [
+                    "To become a seller, you'll need:\n1. Valid ID proof (Aadhar Card, PAN Card)\n2. Active bank account for payments\n3. High-quality product images\n4. Professional communication skills\n5. GST registration (if applicable)\n\nWould you like to know more about any of these requirements?",
+                    "Here are the essential requirements for seller registration:\n• Government-issued ID proof\n• Bank account details\n• Product photographs (min 5 per item)\n• Basic English or Hindi communication skills\n\nNeed more details about these?"
+                ]
+            },
+            payment: {
+                keywords: ["payment", "pay", "money", "transfer", "bank", "account", "settlement"],
+                responses: [
+                    "Our payment process is simple and secure:\n• Payments are processed every 3-5 business days\n• Direct bank transfer to your registered account\n• Real-time payment tracking\n• Automatic tax calculations\n\nWould you like to know about our fees structure?",
+                    "We handle payments with utmost security:\n• Weekly settlements to your bank account\n• Protected by industry-standard encryption\n• Clear transaction history\n• Support for all major banks"
+                ]
+            },
+            fees: {
+                keywords: ["fee", "charge", "commission", "cost", "pricing", "percentage"],
+                responses: [
+                    "Our fee structure is straightforward:\n• 5% commission per sale\n• No monthly fees\n• No listing fees\n• No hidden charges\n\nWould you like to see some revenue examples?",
+                    "Here's our simple pricing:\n• Only 5% commission on successful sales\n• Zero registration fee\n• No maintenance charges\n• Free product listings"
+                ]
+            },
+            support: {
+                keywords: ["support", "help", "contact", "assistance", "guide", "reach"],
+                responses: [
+                    "We're here to help 24/7:\n• Live chat support\n• Email: support@handicraftmarket.com\n• Phone: 1800-XXX-XXXX\n• Dedicated seller success manager\n\nHow would you like to reach us?",
+                    "Our support team is always available:\n• 24/7 chat assistance\n• Priority email support\n• Toll-free helpline\n• Regular seller training sessions"
+                ]
+            },
+            products: {
+                keywords: ["product", "craft", "item", "sell", "listing"],
+                responses: [
+                    "You can sell various handicraft items:\n• Traditional art\n• Handmade jewelry\n• Home decor\n• Textiles\n• Pottery and ceramics\n\nWhat type of products are you planning to sell?",
+                    "We welcome all authentic handicrafts:\n• Artisanal products\n• Indigenous crafts\n• Modern handicrafts\n• Customized items"
+                ]
+            }
+        },
+        hi: {
+            greeting: [
+                "नमस्ते! मैं आपकी विक्रेता पंजीकरण में कैसे मदद कर सकता हूं? 🙏",
+                "हैंडीक्राफ्ट मार्केट में आपका स्वागत है! मैं आपकी कैसे सहायता कर सकता हूं? 🙏",
+                "नमस्कार! क्या आप अपने हस्तशिल्प को बेचना चाहते हैं? मैं आपकी मदद के लिए यहां हूं! 🙏"
+            ],
+            requirements: {
+                keywords: ["आवश्यकता", "जरूरत", "दस्तावेज", "जरूरी", "शुरू", "पंजीकरण", "रजिस्टर"],
+                responses: [
+                    "विक्रेता बनने के लिए आपको इन चीजों की आवश्यकता होगी:\n1. वैध पहचान प्रमाण (आधार कार्ड, पैन कार्ड)\n2. सक्रिय बैंक खाता\n3. उच्च गुणवत्ता वाली उत्पाद तस्वीरें\n4. पेशेवर संचार कौशल\n5. GST पंजीकरण (यदि लागू हो)\n\nक्या आप किसी भी आवश्यकता के बारे में और जानना चाहेंगे?",
+                    "विक्रेता पंजीकरण के लिए आवश्यक चीजें:\n• सरकारी पहचान प्रमाण\n• बैंक खाता विवरण\n• उत्पाद की फोटो (प्रति आइटम कम से कम 5)\n• बुनियादी संचार कौशल\n\nक्या आप और जानकारी चाहते हैं?"
+                ]
+            },
+            payment: {
+                keywords: ["भुगतान", "पैसा", "पेमेंट", "बैंक", "खाता", "ट्रांसफर"],
+                responses: [
+                    "हमारी भुगतान प्रक्रिया सरल और सुरक्षित है:\n• 3-5 कार्य दिवसों में भुगतान प्रोसेस\n• सीधा बैंक खाते में ट्रांसफर\n• रीयल-टाइम भुगतान ट्रैकिंग\n• स्वचालित कर गणना\n\nक्या आप हमारी फीस के बारे में जानना चाहेंगे?",
+                    "हम भुगतान को पूरी सुरक्षा के साथ संभालते हैं:\n• साप्ताहिक बैंक ट्रांसफर\n• उच्च स्तरीय एन्क्रिप्शन सुरक्षा\n• स्पष्ट लेनदेन इतिहास\n• सभी प्रमुख बैंकों के लिए समर्थन"
+                ]
+            },
+            fees: {
+                keywords: ["शुल्क", "कमीशन", "चार्ज", "लागत", "फीस"],
+                responses: [
+                    "हमारी फीस संरचना बिल्कुल स्पष्ट है:\n• प्रति बिक्री 5% कमीशन\n• कोई मासिक शुल्क नहीं\n• कोई लिस्टिंग शुल्क नहीं\n• कोई छिपा हुआ चार्ज नहीं\n\nक्या आप कुछ राजस्व उदाहरण देखना चाहेंगे?",
+                    "हमारी सरल मूल्य नीति:\n• केवल सफल बिक्री पर 5% कमीशन\n• शून्य पंजीकरण शुल्क\n• कोई रखरखाव शुल्क नहीं\n• मुफ्त उत्पाद लिस्टिंग"
+                ]
+            },
+            support: {
+                keywords: ["सहायता", "मदद", "संपर्क", "सहयोग", "गाइड"],
+                responses: [
+                    "हम 24/7 आपकी सेवा में हैं:\n• लाइव चैट सपोर्ट\n• ईमेल: support@handicraftmarket.com\n• फोन: 1800-XXX-XXXX\n• समर्पित विक्रेता सफलता प्रबंधक\n\nआप हमसे कैसे संपर्क करना चाहेंगे?",
+                    "हमारी सहायता टीम हमेशा उपलब्ध है:\n• 24/7 चैट सहायता\n• प्राथमिकता ईमेल सपोर्ट\n• टोल-फ्री हेल्पलाइन\n• नियमित विक्रेता प्रशिक्षण सत्र"
+                ]
+            }
+        }
+    };
+
+    // Suggestions based on language
+    const suggestions = {
+        en: [
+            "Registration requirements",
+            "Payment process",
+            "Platform fees",
+            "Support channels"
+        ],
+        hi: [
+            "पंजीकरण आवश्यकताएं",
+            "भुगतान प्रक्रिया",
+            "प्लेटफॉर्म शुल्क",
+            "सहायता चैनल"
+        ]
+    };
+
+    // Initialize suggestions
+    function updateSuggestions() {
+        const suggestionsContainer = document.querySelector('.chat-suggestions');
+        suggestionsContainer.innerHTML = '';
+        suggestions[currentLanguage].forEach(suggestion => {
+            const chip = document.createElement('span');
+            chip.className = 'suggestion-chip';
+            chip.textContent = suggestion;
+            chip.addEventListener('click', () => {
+                chatInput.value = suggestion;
+                sendChatMessage();
+            });
+            suggestionsContainer.appendChild(chip);
+        });
+    }
+
+    // Show typing indicator
+    function showTypingIndicator() {
+        typingIndicator.classList.add('active');
+        isTyping = true;
+    }
+
+    // Hide typing indicator
+    function hideTypingIndicator() {
+        typingIndicator.classList.remove('active');
+        isTyping = false;
+    }
+
+    // Toggle chat widget
+    chatButton.addEventListener('click', () => {
+        chatContainer.classList.toggle('active');
+        if (chatContainer.classList.contains('active')) {
+            chatInput.focus();
+        }
+    });
+
+    // Toggle language
+    languageToggle.addEventListener('click', () => {
+        currentLanguage = currentLanguage === 'en' ? 'hi' : 'en';
+        languageToggle.textContent = currentLanguage === 'en' ? 'EN | हिंदी' : 'हिंदी | EN';
+        updateSuggestions();
+        
+        // Add language switch message
+        const switchMessage = currentLanguage === 'en' ? 
+            "Switched to English" : 
+            "हिंदी में स्विच किया गया";
+        addMessage(switchMessage, 'bot-message');
+    });
+
+    // Enhanced message sending
+    function sendChatMessage() {
+        const message = chatInput.value.trim();
+        if (!message || isTyping) return;
+
+        // Add user message
+        addMessage(message, 'user-message');
+        chatInput.value = '';
+
+        // Show typing indicator
+        showTypingIndicator();
+
+        // Get bot response with delay
+        setTimeout(() => {
+            const response = getBotResponse(message.toLowerCase(), currentLanguage);
+            hideTypingIndicator();
+            addMessage(response, 'bot-message');
+
+            // Show suggestions after response
+            const suggestionsContainer = document.createElement('div');
+            suggestionsContainer.className = 'chat-suggestions';
+            updateSuggestions();
+        }, 1000 + Math.random() * 1000); // Random delay between 1-2 seconds
+    }
+
+    // Enhanced bot response
+    function getBotResponse(message, language) {
+        const categoryResponses = responses[language];
+        
+        for (const [category, data] of Object.entries(categoryResponses)) {
+            if (category === 'greeting') continue;
+            
+            const keywords = data.keywords;
+            const possibleResponses = data.responses;
+            
+            if (keywords.some(keyword => message.toLowerCase().includes(keyword))) {
+                return possibleResponses[Math.floor(Math.random() * possibleResponses.length)];
+            }
+        }
+
+        // If no keyword match, return random greeting
+        return categoryResponses.greeting[Math.floor(Math.random() * categoryResponses.greeting.length)];
+    }
+
+    // Enhanced message display
+    function addMessage(text, className) {
+        const message = document.createElement('div');
+        message.className = `message ${className}`;
+        
+        // Convert newlines to <br> tags
+        message.innerHTML = text.replace(/\n/g, '<br>');
+        
+        chatMessages.appendChild(message);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    // Event listeners
+    sendMessage.addEventListener('click', sendChatMessage);
+    chatInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            sendChatMessage();
+        }
+    });
+
+    // Initialize suggestions
+    updateSuggestions();
+
+    // Focus input when chat is opened
+    chatButton.addEventListener('click', () => {
+        setTimeout(() => chatInput.focus(), 100);
+    });
+</script>
+{% endblock %}
+{% endblock %} 

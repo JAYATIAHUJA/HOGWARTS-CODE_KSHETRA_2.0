@@ -1,0 +1,342 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="artisans-search-container">
+    <h1>Find Local Artisans</h1>
+    
+    <!-- Search Form -->
+    <div class="search-panel">
+        <form method="GET" action="{% url 'artisans:nearby' %}" class="search-form">
+            <!-- Quick Search -->
+            <div class="quick-search">
+                <input type="text" 
+                       name="search" 
+                       placeholder="Search by name, phone, or location"
+                       value="{{ search_query }}">
+                <button type="submit" class="search-btn">Search</button>
+            </div>
+
+            <!-- Advanced Filters -->
+            <div class="advanced-filters">
+                <div class="filter-group">
+                    <label>State:</label>
+                    <select name="state" id="stateSelect">
+                        <option value="">All States</option>
+                        {% for state in states %}
+                        <option value="{{ state.id }}" 
+                                {% if selected_state == state.id|stringformat:"s" %}selected{% endif %}>
+                            {{ state.name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label>City:</label>
+                    <select name="city" id="citySelect">
+                        <option value="">All Cities</option>
+                        {% for city in cities %}
+                        <option value="{{ city.id }}" 
+                                {% if selected_city == city.id|stringformat:"s" %}selected{% endif %}>
+                            {{ city.name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label>Area:</label>
+                    <select name="area" id="areaSelect">
+                        <option value="">All Areas</option>
+                        {% for area in areas %}
+                        <option value="{{ area.id }}" 
+                                {% if selected_area == area.id|stringformat:"s" %}selected{% endif %}>
+                            {{ area.name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label>Craft Type:</label>
+                    <select name="craft">
+                        <option value="">All Crafts</option>
+                        {% for craft_value, craft_name in craft_choices.items %}
+                        <option value="{{ craft_value }}" 
+                                {% if selected_craft == craft_value %}selected{% endif %}>
+                            {{ craft_name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Results -->
+    <div class="artisans-results">
+        {% for artisan in artisans %}
+        <div class="artisan-card">
+            <div class="artisan-image">
+                {% if artisan.profile_image %}
+                <img src="{{ artisan.profile_image.url }}" alt="{{ artisan.name }}">
+                {% else %}
+                <img src="{% static 'images/default-artisan.png' %}" alt="Default Profile">
+                {% endif %}
+                {% if artisan.is_verified %}
+                <span class="verified-badge">✓ Verified</span>
+                {% endif %}
+            </div>
+            
+            <div class="artisan-details">
+                <h3>{{ artisan.name }}</h3>
+                <p class="craft-type">{{ artisan.get_craft_type_display }}</p>
+                <p class="experience">{{ artisan.years_of_experience }} years of experience</p>
+                <p class="location">
+                    <i class="fas fa-map-marker-alt"></i>
+                    {{ artisan.area.city.name }}, {{ artisan.area.city.state.name }}
+                </p>
+                <p class="description">{{ artisan.description|truncatewords:30 }}</p>
+                
+                <div class="contact-info">
+                    <a href="tel:{{ artisan.phone }}" class="contact-btn phone">
+                        <i class="fas fa-phone"></i> Call
+                    </a>
+                    <a href="mailto:{{ artisan.email }}" class="contact-btn email">
+                        <i class="fas fa-envelope"></i> Email
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="no-results">
+            <h3>No artisans found</h3>
+            <p>Try adjusting your search criteria or browse all artisans</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Add Font Awesome for icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+<style>
+.artisans-search-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.search-panel {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 30px;
+}
+
+.quick-search {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.quick-search input {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.search-btn {
+    padding: 10px 20px;
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.advanced-filters {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.filter-group select {
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.artisan-card {
+    display: flex;
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.artisan-image {
+    position: relative;
+    width: 200px;
+    margin-right: 20px;
+}
+
+.artisan-image img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+.verified-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: #28a745;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+}
+
+.artisan-details {
+    flex: 1;
+}
+
+.craft-type {
+    color: #666;
+    font-style: italic;
+    margin: 5px 0;
+}
+
+.experience {
+    color: #28a745;
+    font-weight: bold;
+    margin: 5px 0;
+}
+
+.location {
+    color: #666;
+    margin: 5px 0;
+}
+
+.description {
+    margin: 10px 0;
+    line-height: 1.5;
+}
+
+.contact-info {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.contact-btn {
+    padding: 8px 15px;
+    border-radius: 4px;
+    text-decoration: none;
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.contact-btn.phone {
+    background: #28a745;
+}
+
+.contact-btn.email {
+    background: #17a2b8;
+}
+
+.no-results {
+    text-align: center;
+    padding: 40px;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+@media (max-width: 768px) {
+    .artisan-card {
+        flex-direction: column;
+    }
+    
+    .artisan-image {
+        width: 100%;
+        margin-right: 0;
+        margin-bottom: 20px;
+    }
+}
+</style>
+
+<script>
+document.getElementById('stateSelect').addEventListener('change', function() {
+    const stateId = this.value;
+    const citySelect = document.getElementById('citySelect');
+    
+    // Reset city select
+    citySelect.innerHTML = '<option value="">All Cities</option>';
+    
+    // If a state is selected, fetch its cities
+    if (stateId) {
+        fetch(`/artisans/get-cities/?state_id=${stateId}`)
+            .then(response => response.json())
+            .then(cities => {
+                cities.forEach(city => {
+                    const option = new Option(city.name, city.id);
+                    citySelect.add(option);
+                });
+            });
+    } else {
+        // If no state selected, fetch all cities
+        fetch('/artisans/get-cities/')
+            .then(response => response.json())
+            .then(cities => {
+                cities.forEach(city => {
+                    const option = new Option(city.name, city.id);
+                    citySelect.add(option);
+                });
+            });
+    }
+});
+
+document.getElementById('citySelect').addEventListener('change', function() {
+    const cityId = this.value;
+    const areaSelect = document.getElementById('areaSelect');
+    
+    // Reset area select
+    areaSelect.innerHTML = '<option value="">All Areas</option>';
+    
+    // If a city is selected, fetch its areas
+    if (cityId) {
+        fetch(`/artisans/get-areas/?city_id=${cityId}`)
+            .then(response => response.json())
+            .then(areas => {
+                areas.forEach(area => {
+                    const option = new Option(area.name, area.id);
+                    areaSelect.add(option);
+                });
+            });
+    } else {
+        // If no city selected, fetch all areas
+        fetch('/artisans/get-areas/')
+            .then(response => response.json())
+            .then(areas => {
+                areas.forEach(area => {
+                    const option = new Option(area.name, area.id);
+                    areaSelect.add(option);
+                });
+            });
+    }
+});
+</script>
+{% endblock %}

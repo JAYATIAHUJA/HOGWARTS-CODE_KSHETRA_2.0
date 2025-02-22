@@ -1,0 +1,107 @@
+<body>
+  <!-- Add this button container just inside the body tag -->
+  <div id="voice-controls" style="position: fixed; bottom: 20px; right: 20px; z-index: 1000;">
+    <button 
+      id="speech-btn-en" 
+      class="speech-control-btn"
+      style="
+        padding: 8px 16px;
+        border-radius: 20px;
+        border: none;
+        background-color: #007bff;
+        color: white;
+        cursor: pointer;
+        margin-bottom: 10px;
+        display: block;
+      "
+    >
+      🔊 Listen (English)
+    </button>
+    <button 
+      id="speech-btn-hi" 
+      class="speech-control-btn"
+      style="
+        padding: 8px 16px;
+        border-radius: 20px;
+        border: none;
+        background-color: #007bff;
+        color: white;
+        cursor: pointer;
+        display: block;
+      "
+    >
+      🔊 सुनें (हिंदी)
+    </button>
+  </div>
+
+  <!-- Add this script before closing body tag -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const speechBtnEn = document.getElementById('speech-btn-en');
+      const speechBtnHi = document.getElementById('speech-btn-hi');
+      let isSpeaking = false;
+
+      const synth = window.speechSynthesis;
+
+      function stopSpeaking() {
+        if (synth) {
+          synth.cancel();
+          isSpeaking = false;
+          speechBtnEn.innerHTML = '🔊 Listen (English)';
+          speechBtnHi.innerHTML = '🔊 सुनें (हिंदी)';
+        }
+      }
+
+      function speak(text, language) {
+        stopSpeaking();
+        
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = language === 'hi' ? 'hi-IN' : 'en-US';
+        
+        // Get available voices
+        const voices = synth.getVoices();
+        const voice = voices.find(v => v.lang.startsWith(language === 'hi' ? 'hi' : 'en')) || voices[0];
+        if (voice) utterance.voice = voice;
+
+        utterance.onend = () => {
+          isSpeaking = false;
+          speechBtnEn.innerHTML = '🔊 Listen (English)';
+          speechBtnHi.innerHTML = '🔊 सुनें (हिंदी)';
+        };
+
+        isSpeaking = true;
+        synth.speak(utterance);
+      }
+
+      function getPageText() {
+        // Get all text content excluding the speech buttons
+        const voiceControls = document.getElementById('voice-controls');
+        const clone = document.body.cloneNode(true);
+        clone.removeChild(clone.querySelector('#voice-controls'));
+        return clone.textContent.trim();
+      }
+
+      speechBtnEn.addEventListener('click', function() {
+        if (isSpeaking) {
+          stopSpeaking();
+          this.innerHTML = '🔊 Listen (English)';
+        } else {
+          speak(getPageText(), 'en');
+          this.innerHTML = '🔇 Stop (English)';
+        }
+      });
+
+      speechBtnHi.addEventListener('click', function() {
+        if (isSpeaking) {
+          stopSpeaking();
+          this.innerHTML = '🔊 सुनें (हिंदी)';
+        } else {
+          speak(getPageText(), 'hi');
+          this.innerHTML = '🔇 रोकें (हिंदी)';
+        }
+      });
+    });
+  </script>
+
+  <!-- ... rest of your existing body content ... -->
+</body> 

@@ -1,0 +1,164 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Terms and Conditions - Handicraft Market{% endblock %}
+
+{% block content %}
+<div class="terms-container">
+    <div class="terms-header">
+        <h1>Terms and Conditions</h1>
+        <p>Last updated: February 21, 2025</p>
+    </div>
+
+    <div class="terms-content">
+        <section class="terms-section">
+            <h2>1. Introduction</h2>
+            <p>Welcome to Handicraft Market. By accessing and using our website, you accept and agree to be bound by these Terms and Conditions. If you do not agree to these terms, please do not use our platform.</p>
+        </section>
+
+        <section class="terms-section">
+            <h2>2. User Accounts</h2>
+            <ul>
+                <li>You must be at least 18 years old to create an account.</li>
+                <li>You are responsible for maintaining the confidentiality of your account credentials.</li>
+                <li>You agree to provide accurate and complete information during registration.</li>
+                <li>You must notify us immediately of any unauthorized use of your account.</li>
+            </ul>
+        </section>
+
+        <section class="terms-section">
+            <h2>3. Seller Terms</h2>
+            <ul>
+                <li>Sellers must complete the KYC verification process.</li>
+                <li>Products must be authentic and as described in the listings.</li>
+                <li>Sellers are responsible for shipping products within the specified timeframe.</li>
+                <li>Commission fees apply to all sales as per our pricing structure.</li>
+            </ul>
+        </section>
+
+        <section class="terms-section">
+            <h2>4. Buyer Terms</h2>
+            <ul>
+                <li>Buyers must make payments through our secure payment system.</li>
+                <li>Orders can be cancelled within 24 hours if not shipped.</li>
+                <li>Return policies vary by seller and product category.</li>
+                <li>Buyers must report issues within 7 days of delivery.</li>
+            </ul>
+        </section>
+
+        <section class="terms-section">
+            <h2>5. Prohibited Activities</h2>
+            <ul>
+                <li>Posting false, misleading, or fraudulent content.</li>
+                <li>Engaging in any illegal activities.</li>
+                <li>Interfering with the platform's security features.</li>
+                <li>Harassing other users or violating their rights.</li>
+            </ul>
+        </section>
+
+        <section class="terms-section">
+            <h2>6. Intellectual Property</h2>
+            <p>All content on Handicraft Market, including text, graphics, logos, and software, is protected by intellectual property rights. Users may not copy, modify, or distribute this content without permission.</p>
+        </section>
+
+        <section class="terms-section">
+            <h2>7. Limitation of Liability</h2>
+            <p>Handicraft Market is not liable for any indirect, incidental, special, or consequential damages arising from your use of our services or any products purchased through our platform.</p>
+        </section>
+
+        <section class="terms-section">
+            <h2>8. Changes to Terms</h2>
+            <p>We reserve the right to modify these terms at any time. Users will be notified of significant changes, and continued use of the platform constitutes acceptance of the modified terms.</p>
+        </section>
+
+        <section class="terms-section">
+            <h2>9. Contact Us</h2>
+            <p>If you have any questions about these Terms and Conditions, please contact us at legal@handicraftmarket.com.</p>
+        </section>
+    </div>
+</div>
+
+<style>
+    .terms-container {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+    }
+
+    .terms-header {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+
+    .terms-header h1 {
+        font-size: 2.5rem;
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+    }
+
+    .terms-header p {
+        color: var(--text-secondary);
+        font-size: 1.1rem;
+    }
+
+    .terms-content {
+        background-color: var(--surface-color);
+        padding: 2rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px var(--shadow-color);
+    }
+
+    .terms-section {
+        margin-bottom: 2rem;
+        padding-bottom: 2rem;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .terms-section:last-child {
+        margin-bottom: 0;
+        padding-bottom: 0;
+        border-bottom: none;
+    }
+
+    .terms-section h2 {
+        color: var(--text-primary);
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .terms-section p {
+        color: var(--text-secondary);
+        line-height: 1.6;
+        margin-bottom: 1rem;
+    }
+
+    .terms-section ul {
+        list-style-type: disc;
+        padding-left: 1.5rem;
+        color: var(--text-secondary);
+    }
+
+    .terms-section li {
+        margin-bottom: 0.5rem;
+        line-height: 1.6;
+    }
+
+    @media (max-width: 768px) {
+        .terms-container {
+            padding: 1rem;
+        }
+
+        .terms-content {
+            padding: 1.5rem;
+        }
+
+        .terms-header h1 {
+            font-size: 2rem;
+        }
+
+        .terms-section h2 {
+            font-size: 1.3rem;
+        }
+    }
+</style>
+{% endblock %} 
