@@ -206,12 +206,111 @@
         : `Redirecting to ${page}...`;
     }
 
+    // Initialize available voices
+    let speechVoices = [];
+    
+    function loadVoices() {
+      speechVoices = window.speechSynthesis.getVoices();
+      console.log("Available voices:", speechVoices.map(v => `${v.name} (${v.lang})`));
+    }
+    
+    // Load voices when available
+    if (window.speechSynthesis.onvoiceschanged !== undefined) {
+      window.speechSynthesis.onvoiceschanged = loadVoices;
+    }
+    
+    // Initial voice loading
+    loadVoices();
+    
     function speakText(text) {
-      if ("speechSynthesis" in window) {
-        let utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = currentLanguage === "hi" ? "hi-IN" : "en-US";
-        speechSynthesis.speak(utterance);
+      if (!("speechSynthesis" in window)) {
+        console.error("Speech synthesis not supported");
+        return;
       }
+      
+      // Cancel any ongoing speech
+      window.speechSynthesis.cancel();
+      
+      // Create utterance
+      const utterance = new SpeechSynthesisUtterance(text);
+      
+      // Force reload voices if empty
+      if (speechVoices.length === 0) {
+        speechVoices = window.speechSynthesis.getVoices();
+      }
+      
+      // Set language and find appropriate voice
+      if (currentLanguage === "hi") {
+        utterance.lang = "hi-IN";
+        
+        // Try to find Hindi voice
+        const hindiVoice = speechVoices.find(voice => 
+          voice.lang.includes('hi') || 
+          voice.name.toLowerCase().includes('hindi') ||
+          voice.lang === 'hi-IN'
+        );
+        
+        if (hindiVoice) {
+          console.log("Found Hindi voice:", hindiVoice.name);
+          utterance.voice = hindiVoice;
+        } else {
+          console.warn("No Hindi voice found. Using default voice.");
+          // If no Hindi voice is found, we'll try Google's transliteration
+          // Convert text to a format that might be more pronounceable
+          let transliteratedText = text
+            .replace(/[ा]/g, 'aa')
+            .replace(/[ि]/g, 'i')
+            .replace(/[ी]/g, 'ee')
+            .replace(/[ु]/g, 'u')
+            .replace(/[ू]/g, 'oo')
+            .replace(/[े]/g, 'e')
+            .replace(/[ै]/g, 'ai')
+            .replace(/[ो]/g, 'o')
+            .replace(/[ौ]/g, 'au');
+            
+          // Use both original and transliterated
+          utterance.text = text + " " + transliteratedText;
+        }
+      } else {
+        utterance.lang = "en-US";
+        
+        // Find English voice
+        const englishVoice = speechVoices.find(voice => 
+          voice.lang.includes('en') && 
+          voice.name.includes('Female')
+        );
+        
+        if (englishVoice) {
+          utterance.voice = englishVoice;
+        }
+      }
+      
+      // Set properties
+      utterance.volume = 1.0;
+      utterance.rate = 0.9; // Slightly slower
+      utterance.pitch = 1.0;
+      
+      // Add event handlers
+      utterance.onstart = () => console.log(`Speech started in ${currentLanguage}`);
+      utterance.onend = () => console.log('Speech ended');
+      utterance.onerror = (e) => console.error('Speech error:', e);
+      
+      // Speak with slight delay to ensure everything is ready
+      setTimeout(() => {
+        try {
+          window.speechSynthesis.speak(utterance);
+        } catch (error) {
+          console.error("Error speaking:", error);
+        }
+      }, 200);
+    }
+    
+    // Test if browser supports speech
+    if (window.speechSynthesis) {
+      console.log("Speech synthesis supported");
+      loadVoices();
+    } else {
+      console.error("Speech synthesis not supported");
     }
 
     if ("webkitSpeechRecognition" in window) {

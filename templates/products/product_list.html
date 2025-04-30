@@ -37,8 +37,8 @@
         {% for product in products %}
         <div class="product-card">
             <div class="product-image">
-                {% if product.images.exists %}
-                <img src="{{ product.images.first.image.url }}" alt="{{ product.name }}">
+                {% if product.main_image %}
+                <img src="{{ product.main_image.url }}" alt="{{ product.name }}">
                 {% else %}
                 <div class="no-image">No Image</div>
                 {% endif %}
@@ -55,12 +55,18 @@
                     {% endif %}
                 </div>
                 <div class="product-actions">
-                    <a href="{% url 'products:product_detail' product.pk %}" class="btn btn-primary">View Details</a>
+                    <a href="{% url 'products:product_detail' product.slug %}" class="btn btn-primary">View Details</a>
                     {% if product.stock > 0 %}
-                    <button class="btn btn-secondary add-to-cart" data-product-id="{{ product.pk }}">Add to Cart</button>
+                    <button 
+                        onclick="addToCart({{ product.id }})" 
+                        class="btn btn-primary add-to-cart-btn" 
+                        data-product-id="{{ product.id }}">
+                        <i class="fas fa-shopping-cart"></i> Add to Cart
+                    </button>
                     {% endif %}
                 </div>
             </div>
+            <input type="hidden" name="product_id" value="{{ product.id }}">
         </div>
         {% empty %}
         <div class="empty-state">
@@ -310,4 +316,78 @@
         }
     }
 </style>
-{% endblock %} 
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  // Simple, robust add to cart function
+  function addToCart(productId) {
+    // Get CSRF token
+    const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    
+    // Change button state
+    const button = document.querySelector(`.add-to-cart-btn[data-product-id="${productId}"]`);
+    const originalText = button.innerHTML;
+    button.innerHTML = 'Adding...';
+    button.disabled = true;
+    
+    // Save original classes
+    const originalClasses = button.className;
+    
+    // Make the request
+    fetch(`/products/cart/add/${productId}/`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'X-CSRFToken': csrftoken
+      }
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.status === 'success') {
+        button.innerHTML = 'Added! ✓';
+        // Don't change button class, just add a success class if needed
+        button.classList.add('btn-success');
+        
+        // Update cart count if it exists
+        const cartCount = document.querySelector('.cart-count');
+        if (cartCount) {
+          cartCount.textContent = data.cart_total;
+          cartCount.style.display = 'inline-block';
+        }
+        
+        // Reset button after 2 seconds
+        setTimeout(() => {
+          button.innerHTML = originalText;
+          button.disabled = false;
+          button.className = originalClasses;
+        }, 2000);
+      } else {
+        button.innerHTML = data.message || 'Error';
+        button.classList.add('btn-danger');
+        
+        // Reset button after 2 seconds
+        setTimeout(() => {
+          button.innerHTML = originalText;
+          button.disabled = false;
+          button.className = originalClasses;
+        }, 2000);
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      button.innerHTML = 'Error';
+      button.classList.add('btn-danger');
+      
+      // Reset button after 2 seconds
+      setTimeout(() => {
+        button.innerHTML = originalText;
+        button.disabled = false;
+        button.className = originalClasses;
+      }, 2000);
+    });
+  }
+</script>
+{% endblock %}
+
+{% csrf_token %} 

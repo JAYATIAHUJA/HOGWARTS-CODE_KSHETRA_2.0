@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db.models import Sum, Count
 from .models import CustomUser, SellerKYC
-from products.models import Product, Order, Category
+from products.models import Product, Order, Category, Wishlist
 from .forms import (
     CustomUserCreationForm,
     SellerRegistrationForm,
@@ -200,8 +200,18 @@ def customer_dashboard_view(request):
     
     context = {
         'recent_orders': Order.objects.filter(customer=request.user).order_by('-created_at')[:5],
-        'wishlist_items': request.user.wishlist.all()[:5] if hasattr(request.user, 'wishlist') else [],
     }
+    
+    # Safe way to check for wishlist items
+    try:
+        wishlist = Wishlist.objects.filter(user=request.user).first()
+        if wishlist:
+            context['wishlist_items'] = wishlist.products.all()[:5]
+        else:
+            context['wishlist_items'] = []
+    except:
+        # If there's any error (like the table not existing)
+        context['wishlist_items'] = []
     
     return render(request, 'accounts/customer/dashboard.html', context)
 

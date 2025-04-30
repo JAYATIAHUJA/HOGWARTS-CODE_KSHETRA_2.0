@@ -1,112 +1,429 @@
 {% extends 'base.html' %}
 {% load static %}
-
-{% block title %}{{ product.name }} - Handicraft Market{% endblock %}
-
+{% block title %}
+  {{ product.name }} - Handicraft Market
+{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.css" />
+<link rel="stylesheet" href="{% static 'css/product_detail.css' %}" />
+{% endblock %}
 {% block content %}
-<div class="product-detail-container">
-    <div class="product-images">
-        <div class="main-image">
-            <img src="{{ product.main_image.url }}" alt="{{ product.name }}">
+<div class="product-container">
+  <div class="product-header">
+    <div class="breadcrumbs">
+      <a href="{% url 'core:home' %}">Home</a>
+      <span class="separator">/</span>
+      <a href="{% url 'products:product_list' %}">Products</a>
+      <span class="separator">/</span>
+      <a href="{% url 'products:category_detail' product.category.slug %}">{{ product.category.name }}</a>
+      <span class="separator">/</span>
+      <span>{{ product.name }}</span>
+    </div>
+  </div>
+
+  <div class="product-content">
+    <div class="product-gallery">
+      <!-- Main Gallery -->
+      <div class="swiper gallery-main">
+        <div class="swiper-wrapper">
+          {% if product.main_image %}
+          <div class="swiper-slide">
+            <img src="{{ product.main_image.url }}" alt="{{ product.name }}" />
+          </div>
+          {% endif %}
+          {% for image in product.images.all %}
+          <div class="swiper-slide">
+            <img src="{{ image.image.url }}" alt="{{ product.name }} - Image {{ forloop.counter }}" />
+          </div>
+          {% endfor %}
+          <!-- -->
+          {% if not product.main_image and not product.images.all %}
+          <div class="swiper-slide">
+            <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: #f0f0f0; color: #aaa; font-size: 1.5rem;">
+              No Image Available
+            </div>
+          </div>
+          {% endif %}
         </div>
-        {% if product.additional_images.all %}
-        <div class="thumbnail-images">
-            {% for image in product.additional_images.all %}
-            <img src="{{ image.image.url }}" alt="{{ product.name }} - Image {{ forloop.counter }}" 
-                 onclick="updateMainImage(this.src)">
-            {% endfor %}
+        <div class="swiper-button-next"></div>
+        <div class="swiper-button-prev"></div>
+      </div>
+
+      <!-- Thumbnails -->
+      {% if product.images.all|length > 1 or product.main_image %}
+      <div class="swiper gallery-thumbs">
+        <div class="swiper-wrapper">
+          {% if product.main_image %}
+          <div class="swiper-slide">
+            <img src="{{ product.main_image.url }}" alt="{{ product.name }} thumbnail" />
+          </div>
+          {% endif %}
+          {% for image in product.images.all %}
+          <div class="swiper-slide">
+            <img src="{{ image.image.url }}" alt="{{ product.name }} thumbnail {{ forloop.counter }}" />
+          </div>
+          {% endfor %}
         </div>
-        {% endif %}
+      </div>
+      {% endif %}
     </div>
 
-    <div class="product-info">
-        <h1>{{ product.name }}</h1>
-        <div class="product-meta">
-            <span class="category">{{ product.category.name }}</span>
-            <span class="seller">by {{ product.seller.business_name }}</span>
+    <div class="product-details">
+      <h1>{{ product.name }}</h1>
+
+      <div class="product-meta">
+        <div class="product-seller">
+          by <a href="#">{{ product.seller.business_name }}</a>
         </div>
 
-        <div class="product-price">
-            <span class="current-price">${{ product.price }}</span>
-            {% if product.compare_price %}
-            <span class="compare-price">${{ product.compare_price }}</span>
-            <span class="discount">
-                {{ product.discount_percentage }}% OFF
-            </span>
-            {% endif %}
-        </div>
-
-        <div class="stock-status {% if product.stock > 0 %}in-stock{% else %}out-of-stock{% endif %}">
-            {% if product.stock > 0 %}
-            <i class="fas fa-check-circle"></i> In Stock ({{ product.stock }} available)
+        <div class="product-rating">
+          <div class="rating-stars">
+            {% if product.average_rating %}
+              {% with ''|center:product.average_rating as range %}
+                {% for _ in range %}★{% endfor %}
+              {% endwith %}
+              {% with ''|center:5|slice:product.average_rating as range %}
+                {% for _ in range %}☆{% endfor %}
+              {% endwith %}
             {% else %}
-            <i class="fas fa-times-circle"></i> Out of Stock
+              <span>No ratings yet</span>
             {% endif %}
+          </div>
+          <span class="rating-count">({{ product.reviews.count }} reviews)</span>
+        </div>
+      </div>
+
+      <div class="product-price">${{ product.price }}</div>
+
+      {% if product.stock > 10 %}
+      <div class="product-stock in-stock">
+        In Stock ({{ product.stock }} available)
+      </div>
+      {% elif product.stock > 0 %}
+      <div class="product-stock low-stock">
+        Low Stock (Only {{ product.stock }} left)
+      </div>
+      {% else %}
+      <div class="product-stock out-stock">Out of Stock</div>
+      {% endif %}
+
+      <div class="product-description">
+        {{ product.description|linebreaks }}
+      </div>
+
+      <div class="product-attributes">
+        <div class="product-attr">
+          <span class="attr-label">Material</span>
+          <span class="attr-value">{{ product.material|default:"Handcrafted" }}</span>
         </div>
 
-        {% if product.stock > 0 %}
-        <div class="product-actions">
-            <button class="btn btn-primary add-to-cart-btn" 
-                    data-product-id="{{ product.id }}"
-                    {% if not user.is_authenticated %}
-                    onclick="window.location.href='{% url 'login' %}?next={{ request.path }}'"
-                    {% endif %}>
-                <i class="fas fa-shopping-cart"></i> Add to Cart
-            </button>
-            <button class="btn btn-outline wishlist-btn" data-product-id="{{ product.id }}">
-                <i class="far fa-heart"></i> Add to Wishlist
-            </button>
+        <div class="product-attr">
+          <span class="attr-label">Dimensions</span>
+          <span class="attr-value">{{ product.dimensions|default:"Various sizes" }}</span>
         </div>
+
+        <div class="product-attr">
+          <span class="attr-label">Weight</span>
+          <span class="attr-value">{{ product.weight|default:"0.5 kg" }}</span>
+        </div>
+
+        <div class="product-attr">
+          <span class="attr-label">Origin</span>
+          <span class="attr-value">{{ product.origin|default:"Local Artisan" }}</span>
+        </div>
+      </div>
+
+      <div class="product-actions">
+        <div class="quantity-selector">
+          <button class="quantity-btn minus" id="decreaseQuantity">-</button>
+          <input type="number" class="quantity-input" id="quantity" value="1" min="1" max="{{ product.stock }}" />
+          <button class="quantity-btn plus" id="increaseQuantity">+</button>
+        </div>
+
+        {% if user.is_authenticated %}
+        <button class="add-to-cart-btn" data-product-id="{{ product.id }}" onclick="addToCart({{ product.id }})">
+          <i class="fas fa-shopping-cart"></i> Add to Cart
+        </button>
+        {% else %}
+        <a href="{% url 'accounts:login' %}?next={{ request.path }}" class="add-to-cart-btn">
+          <i class="fas fa-shopping-cart"></i> Login to Add to Cart
+        </a>
         {% endif %}
 
-        <div class="product-description">
-            <h2>Description</h2>
-            {{ product.description|linebreaks }}
-        </div>
-
-        <div class="product-details">
-            <h2>Product Details</h2>
-            <ul>
-                <li><strong>Material:</strong> {{ product.material }}</li>
-                <li><strong>Dimensions:</strong> {{ product.dimensions }}</li>
-                <li><strong>Weight:</strong> {{ product.weight }}</li>
-                {% if product.customization_available %}
-                <li><strong>Customization:</strong> Available</li>
-                {% endif %}
-            </ul>
-        </div>
-
-        {% if product.shipping_info %}
-        <div class="shipping-info">
-            <h2>Shipping Information</h2>
-            {{ product.shipping_info|linebreaks }}
-        </div>
-        {% endif %}
+        <button class="add-to-wishlist" data-product-id="{{ product.id }}">
+          <i class="far fa-heart"></i>
+        </button>
+      </div>
     </div>
-</div>
+  </div>
 
-{% if related_products %}
-<div class="related-products">
-    <h2>You May Also Like</h2>
-    <div class="products-grid">
-        {% for related_product in related_products %}
-        <div class="product-card">
-            <a href="{{ related_product.get_absolute_url }}">
-                <img src="{{ related_product.main_image.url }}" alt="{{ related_product.name }}">
-                <h3>{{ related_product.name }}</h3>
-                <p class="price">${{ related_product.price }}</p>
-            </a>
+  <div class="product-tabs">
+    <div class="tab-buttons">
+      <button class="tab-btn active" data-tab="description">Description</button>
+      <button class="tab-btn" data-tab="specifications">Specifications</button>
+      <button class="tab-btn" data-tab="reviews">Reviews ({{ product.reviews.count }})</button>
+      <button class="tab-btn" data-tab="shipping">Shipping & Returns</button>
+    </div>
+
+    <div id="description" class="tab-content active">
+      <h3>Product Description</h3>
+      {{ product.description|linebreaks }}
+      {% if product.features %}
+      <h4>Features</h4>
+      <ul>
+        {% for feature in product.features_list %}
+        <li>{{ feature }}</li>
+        {% endfor %}
+      </ul>
+      {% endif %}
+    </div>
+
+    <div id="specifications" class="tab-content">
+      <h3>Product Specifications</h3>
+      <table class="specs-table">
+        <tr>
+          <th>Material</th>
+          <td>{{ product.material|default:"Handcrafted material" }}</td>
+        </tr>
+        <tr>
+          <th>Dimensions</th>
+          <td>{{ product.dimensions|default:"Various sizes available" }}</td>
+        </tr>
+        <tr>
+          <th>Weight</th>
+          <td>{{ product.weight|default:"Approximately 0.5 kg" }}</td>
+        </tr>
+        <tr>
+          <th>Origin</th>
+          <td>{{ product.origin|default:"Handmade by local artisans" }}</td>
+        </tr>
+        <tr>
+          <th>Care Instructions</th>
+          <td>{{ product.care_instructions|default:"Clean with dry cloth. Keep away from moisture." }}</td>
+        </tr>
+      </table>
+    </div>
+
+    <div id="reviews" class="tab-content">
+      <h3>Customer Reviews</h3>
+      {% if product.reviews.all %}
+      <div class="reviews-list">
+        {% for review in product.reviews.all %}
+        <div class="review">
+          <div class="review-header">
+            <span class="review-rating">
+              {% with ''|center:review.rating as range %}
+                {% for _ in range %}★{% endfor %}
+              {% endwith %}
+            </span>
+            <span class="review-author">{{ review.user.get_full_name|default:review.user.username }}</span>
+            <span class="review-date">{{ review.created_at|date:"F j, Y" }}</span>
+          </div>
+          <div class="review-content">{{ review.comment }}</div>
         </div>
         {% endfor %}
+      </div>
+      {% else %}
+      <p>No reviews yet. Be the first to review this product!</p>
+      {% endif %}
+      {% if user.is_authenticated %}
+      <div class="review-form">
+        <h4>Write a Review</h4>
+        <form method="post" action="{% url 'products:add_review' product.slug %}">
+          {% csrf_token %}
+          <div class="form-group">
+            <label for="rating">Rating</label>
+            <select name="rating" id="rating" required>
+              <option value="5">5 Stars</option>
+              <option value="4">4 Stars</option>
+              <option value="3">3 Stars</option>
+              <option value="2">2 Stars</option>
+              <option value="1">1 Star</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="comment">Your Review</label>
+            <textarea name="comment" id="comment" rows="4" required></textarea>
+          </div>
+          <button type="submit" class="btn">Submit Review</button>
+        </form>
+      </div>
+      {% endif %}
     </div>
-</div>
-{% endif %}
-{% endblock %}
 
+    <div id="shipping" class="tab-content">
+      <h3>Shipping Information</h3>
+      <p>All items ship within 2-3 business days. Delivery typically takes 5-7 business days depending on your location.</p>
+
+      <h3>Return Policy</h3>
+      <p>If you're not completely satisfied with your purchase, you can return it within 30 days for a full refund. Items must be unused and in their original packaging.</p>
+    </div>
+  </div>
+
+  {% if related_products %}
+  <div class="related-products">
+    <h2>You May Also Like</h2>
+    <div class="related-grid">
+      {% for product in related_products %}
+      <div class="related-product">
+        <a href="{% url 'products:product_detail' product.slug %}">
+          {% if product.main_image %}
+          <img src="{{ product.main_image.url }}" alt="{{ product.name }}" />
+          {% elif product.images.first %}
+          <img src="{{ product.images.first.image.url }}" alt="{{ product.name }}" />
+          {% else %}
+          <div style="width: 100%; height: 200px; background: #f0f0f0; display: flex; align-items: center; justify-content: center; color: #aaa;">
+            No Image
+          </div>
+          {% endif %}
+          <div class="related-product-info">
+            <h3>{{ product.name }}</h3>
+            <div class="related-product-price">${{ product.price }}</div>
+          </div>
+        </a>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
 {% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.js"></script>
 <script>
-function updateMainImage(src) {
-    document.querySelector('.main-image img').src = src;
-}
+  document.addEventListener("DOMContentLoaded", function () {
+    // Image Gallery
+    var galleryThumbs = new Swiper(".gallery-thumbs", {
+      spaceBetween: 10,
+      slidesPerView: 4,
+      freeMode: true,
+      watchSlidesProgress: true,
+    });
+
+    var galleryMain = new Swiper(".gallery-main", {
+      spaceBetween: 10,
+      navigation: {
+        nextEl: ".swiper-button-next",
+        prevEl: ".swiper-button-prev",
+      },
+      thumbs: {
+        swiper: galleryThumbs,
+      },
+    });
+
+    // Quantity Selector
+    const quantityInput = document.getElementById("quantity");
+    const decreaseBtn = document.getElementById("decreaseQuantity");
+    const increaseBtn = document.getElementById("increaseQuantity");
+
+    if (decreaseBtn && increaseBtn && quantityInput) {
+      decreaseBtn.addEventListener("click", function () {
+        const currentValue = parseInt(quantityInput.value);
+        if (currentValue > 1) {
+          quantityInput.value = currentValue - 1;
+        }
+      });
+
+      increaseBtn.addEventListener("click", function () {
+        const currentValue = parseInt(quantityInput.value);
+        const maxValue = parseInt(quantityInput.getAttribute("max"));
+        if (currentValue < maxValue) {
+          quantityInput.value = currentValue + 1;
+        }
+      });
+    }
+
+    // Tabs
+    const tabButtons = document.querySelectorAll(".tab-btn");
+    const tabContents = document.querySelectorAll(".tab-content");
+
+    tabButtons.forEach((button) => {
+      button.addEventListener("click", function () {
+        const tabId = this.getAttribute("data-tab");
+
+        tabButtons.forEach((btn) => btn.classList.remove("active"));
+        tabContents.forEach((content) => content.classList.remove("active"));
+
+        this.classList.add("active");
+        document.getElementById(tabId).classList.add("active");
+      });
+    });
+    
+    // Add to Wishlist
+    const wishlistBtn = document.querySelector(".add-to-wishlist");
+    if (wishlistBtn) {
+      wishlistBtn.addEventListener("click", function () {
+        const productId = this.getAttribute("data-product-id");
+        const csrftoken = document.querySelector("[name=csrfmiddlewaretoken]").value;
+
+        fetch(`/products/wishlist/add/${productId}/`, {
+          method: "POST",
+          headers: {
+            "X-CSRFToken": csrftoken,
+          },
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.status === "success") {
+              this.classList.add("in-wishlist");
+              this.innerHTML = '<i class="fas fa-heart"></i>';
+            } else if (data.status === "login_required") {
+              window.location.href = "/accounts/login/?next=" + window.location.pathname;
+            }
+          });
+      });
+    }
+
+    // Add this to improve voice reliability
+    const voiceCache = {};
+    
+    function speakText(text) {
+      if ("speechSynthesis" in window) {
+        // Use cache for repeated phrases
+        if (voiceCache[text] && voiceCache[text].lang === currentLanguage) {
+          window.speechSynthesis.speak(voiceCache[text]);
+          return;
+        }
+        
+        window.speechSynthesis.cancel();
+        
+        let utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = currentLanguage === "hi" ? "hi-IN" : "en-US";
+        
+        // Cache the utterance
+        voiceCache[text] = utterance;
+        
+        // Get available voices
+        const voices = window.speechSynthesis.getVoices();
+        const voice = voices.find(v => v.lang.startsWith(currentLanguage === "hi" ? "hi" : "en"));
+        if (voice) utterance.voice = voice;
+        
+        window.speechSynthesis.speak(utterance);
+      }
+    }
+  });
+
+  // Add to Cart function
+  function addToCart(productId) {
+    const quantity = document.getElementById("quantity").value;
+    const csrftoken = document.querySelector("[name=csrfmiddlewaretoken]").value;
+
+    fetch(`/products/cart/add/${productId}/`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        "X-CSRFToken": csrftoken,
+      },
+      body: `quantity=${quantity}`,
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.status === "success") {
+          alert("Product added to cart!");
+        } else {
+          alert(data.message || "Error adding to cart");
+        }
+      });
+  }
 </script>
-{% endblock %} 
+{% endblock %}

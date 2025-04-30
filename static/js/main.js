@@ -121,17 +121,69 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     
     images.forEach(img => imageObserver.observe(img));
+
+    const featuredProducts = []; // Replace with actual logic to fetch featured products
+
+    const productsList = document.getElementById('products-list');
+    const categoriesButton = document.getElementById('categories-button');
+
+    if (featuredProducts.length === 0) {
+        // No featured products, show the categories button
+        categoriesButton.style.display = 'block';
+    } else {
+        // Logic to display featured products
+        featuredProducts.forEach(product => {
+            const productItem = document.createElement('div');
+            productItem.className = 'product-item';
+            productItem.textContent = product.name; // Adjust to display product details
+            productsList.appendChild(productItem);
+        });
+    }
 }); 
 
 // Function to show the popup after 3 seconds
+function showPopup() {
+    const popup = document.getElementById("whatsapp-popup");
+    if (popup) {
+        popup.style.display = "flex";
+    }
+}
+
 window.onload = function () {
-    setTimeout(() => {
-        document.getElementById("whatsapp-popup").style.display = "flex";
-    }, 3000);
+    // Check if the popup has been shown before
+    const popupShown = localStorage.getItem('whatsappPopupShown');
+    
+    // Check if the current page is the home page
+    const isHomePage = window.location.pathname === '/'; // Adjust this if your home page path is different
+
+    if (!popupShown && isHomePage) {
+        setTimeout(() => {
+            showPopup();
+            // Mark the popup as shown
+            localStorage.setItem('whatsappPopupShown', 'true');
+        }, 3000);
+    }
 };
 
 // Function to close the popup
 function closePopup() {
-    document.getElementById("whatsapp-popup").style.display = "none";
+    const popup = document.getElementById("whatsapp-popup");
+    if (popup) {
+        popup.style.display = "none";
+    }
 }
+
+// Attach the closePopup function to the close button of the popup
+const closeButton = document.querySelector("#whatsapp-popup .close-button");
+if (closeButton) {
+    closeButton.addEventListener('click', closePopup);
+}
+
+// Prevent popup from being triggered by other actions
+document.addEventListener('click', (e) => {
+    if (e.target.closest('#whatsapp-popup') || e.target.closest('.close-button')) {
+        return;
+    }
+    closePopup();
+});
 

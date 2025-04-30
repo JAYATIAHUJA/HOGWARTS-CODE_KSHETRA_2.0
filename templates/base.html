@@ -320,19 +320,7 @@
       </div>
     </div>
 
-   <!-- WhatsApp Popup -->
-<div id="whatsapp-popup" class="popup-overlay">
-  <div class="popup-content">
-      <span class="close-btn" onclick="closePopup()">&times;</span>
-      <h2>🌟 अपना खुद का हस्तशिल्प बाज़ार बनाएं! 🌟</h2>
-      <p>लोकल कलाकारों से जुड़ें, अपने हस्तशिल्प बेचें और अनोखे उत्पाद खरीदें! 🛍️✨</p>
-      <p><strong>💬 अभी चैट करें और जानें कैसे!</strong></p>
-      <a href="https://api.whatsapp.com/send?phone=+911234567890&text=नमस्ते!%20मैं%20हस्तशिल्प%20सेलर%20या%20खरीददार%20बनना%20चाहता%20हूं।"
-         target="_blank" class="whatsapp-btn">
-          <i class="fab fa-whatsapp"></i> WhatsApp पर चैट करें
-      </a>
-  </div>
-</div>
+   
 
 </div>
 
@@ -589,46 +577,38 @@
 
         // Improve the getBotResponse function
         function getBotResponse(message) {
-          message = message.toLowerCase();
-
-          // Navigation commands
-          if (
-            message.includes("go to") ||
-            message.includes("open") ||
-            message.includes("show")
-          ) {
-            if (message.includes("home")) {
-              window.location.href = "{% url 'core:home' %}";
-              return "Navigating to home page...";
-            } else if (message.includes("categories")) {
-              window.location.href = "{% url 'products:category_list' %}";
-              return "Opening categories...";
-            } else if (message.includes("cart")) {
-              window.location.href = "{% url 'products:cart' %}";
-              return "Opening your cart...";
-            }
+          // Check for greetings first
+          const greetings = {
+            en: ["hello", "hi", "hey", "greetings", "howdy"],
+            hi: ["नमस्ते", "हैलो", "हाय"]
+          };
+          
+          // Check if message contains any greeting
+          if (greetings.en.some(greeting => message.includes(greeting)) ||
+              greetings.hi.some(greeting => message.includes(greeting))) {
+            return currentLanguage === "hi" 
+              ? "नमस्ते! मैं आपकी कैसे मदद कर सकता हूँ?"
+              : "Hello! How can I help you today?";
           }
-
-          // Regular queries
-          if (message.includes("hello") || message.includes("hi")) {
-            return "Hello! How can I help you today? 👋";
-          } else if (
-            message.includes("register") ||
-            message.includes("sign up")
-          ) {
-            return "To register as a seller, you'll need:\n1. Valid ID proof\n2. Active bank account\n3. Product images\n4. GST registration (if applicable)";
-          } else if (message.includes("payment") || message.includes("fees")) {
-            return "Our payment process is simple:\n• 5% commission per sale\n• No monthly fees\n• Weekly payments\n• Secure transactions";
-          } else if (
-            message.includes("delivery") ||
-            message.includes("shipping")
-          ) {
-            return "We offer delivery across India. Shipping typically takes 3-7 business days depending on location.";
-          } else if (message.includes("help")) {
-            return "I can help you with:\n• Registration process\n• Payment information\n• Shipping details\n• Product listings\n• Navigation commands";
+          
+          // Check for navigation intents
+          const langKeywords = urls[currentLanguage];
+          for (const key in langKeywords) {
+            if (message.includes(langKeywords[key])) 
+              return redirectTo(key);
           }
-
-          return "I'm here to help! Try asking about:\n• Registration\n• Payments\n• Shipping\n• Products\nOr say 'help' for more options.";
+          
+          // Add more responses for common questions
+          if (message.includes("help") || message.includes("मदद")) {
+            return currentLanguage === "hi"
+              ? "आप मुझसे उत्पादों, श्रेणियों, कार्ट, या लॉगिन के बारे में पूछ सकते हैं।"
+              : "You can ask me about products, categories, cart, or login.";
+          }
+          
+          // Default response
+          return currentLanguage === "hi"
+            ? "मुझे खेद है, मैं नहीं समझ सका। कृपया दूसरे शब्दों में प्रयास करें।"
+            : "Sorry, I didn't understand that. Please try different wording.";
         }
 
         // Initialize chat
@@ -676,22 +656,90 @@
 
             // Improve voice output
             function speakText(text) {
-              if (!isVoiceOutputEnabled || !window.speechSynthesis) return;
-
-              // Cancel any ongoing speech
-              speechSynthesis.cancel();
-
-              const cleanText = text
-                .replace(/<[^>]*>/g, "")
-                .replace(/[^\w\s.,!?-]/g, "")
-                .trim();
-              if (!cleanText) return;
-
-              const utterance = new SpeechSynthesisUtterance(cleanText);
-              utterance.lang = "en-US";
-              utterance.rate = 1;
-              utterance.pitch = 1;
-              speechSynthesis.speak(utterance);
+              if (!isVoiceOutputEnabled) {
+                if (DEBUG_MODE) console.log("Voice output is disabled");
+                return;
+              }
+              
+              if (!("speechSynthesis" in window)) {
+                console.error("Speech synthesis not supported in this browser");
+                return;
+              }
+              
+              if (DEBUG_MODE) console.log("Starting speech synthesis for:", text);
+              
+              // Cancel any previous speech
+              window.speechSynthesis.cancel();
+              
+              const utterance = new SpeechSynthesisUtterance(text);
+              utterance.lang = currentLanguage === "hi" ? "hi-IN" : "en-US";
+              utterance.volume = 1;
+              
+              // Add debug logs for voice selection
+              let voices = [];
+              try {
+                voices = window.speechSynthesis.getVoices();
+                if (DEBUG_MODE) console.log("Available voices:", voices.length);
+              } catch (e) {
+                console.error("Error getting voices:", e);
+              }
+              
+              if (voices && voices.length > 0) {
+                // Try to find a matching voice
+                let voice = voices.find(v => v.lang === utterance.lang);
+                
+                // If no exact match, try a partial match
+                if (!voice) {
+                  voice = voices.find(v => v.lang.startsWith(utterance.lang.split('-')[0]));
+                }
+                
+                // If still no match, use default
+                if (!voice) {
+                  voice = voices[0];
+                }
+                
+                if (voice) {
+                  utterance.voice = voice;
+                  if (DEBUG_MODE) console.log("Using voice:", voice.name);
+                }
+              }
+              
+              // Adjust rate and pitch for better Hindi pronunciation
+              if (utterance.lang === "hi-IN") {
+                utterance.rate = 0.9; // Slightly slower for Hindi
+                utterance.pitch = 1.1; // Slightly higher pitch
+              }
+              
+              // Add debugging events
+              utterance.onstart = () => { 
+                if (DEBUG_MODE) console.log("Speech started"); 
+              };
+              
+              utterance.onend = () => { 
+                if (DEBUG_MODE) console.log("Speech ended"); 
+              };
+              
+              utterance.onerror = (e) => { 
+                console.error("Speech error:", e); 
+              };
+              
+              // Speak with a retry mechanism
+              try {
+                setTimeout(() => {
+                  window.speechSynthesis.speak(utterance);
+                }, 100);
+              } catch (e) {
+                console.error("Speech error:", e);
+                
+                // Try again after a short delay
+                setTimeout(() => {
+                  try {
+                    window.speechSynthesis.speak(utterance);
+                  } catch (retryError) {
+                    console.error("Retry failed:", retryError);
+                  }
+                }, 500);
+              }
             }
           }
 

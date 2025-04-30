@@ -2,9 +2,14 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db.models import Q
-from .models import Product, Category, Review, Cart, CartItem
+from .models import Product, Category, Review, Cart, CartItem, Wishlist
 from .forms import ProductForm, ReviewForm
 from django.http import JsonResponse
+import logging
+from django.http import Http404
+from django.urls import reverse
+
+logger = logging.getLogger(__name__)
 
 def product_list_view(request):
     products = Product.objects.filter(is_active=True)
@@ -32,7 +37,9 @@ def product_list_view(request):
         elif sort == 'popular':
             products = products.order_by('-views')
 
+    # Get all categories from the database
     categories = Category.objects.all()
+    
     context = {
         'products': products,
         'categories': categories,
@@ -70,6 +77,13 @@ def product_detail_view(request, slug):
 
 def category_list_view(request):
     categories = Category.objects.all()
+    
+    # Make sure all categories have descriptions
+    for category in categories:
+        if not category.description:
+            # Set a custom description based on category name
+            category.description = f"Explore our beautiful collection of {category.name.lower()} crafted by talented artisans."
+    
     return render(request, 'products/category_list.html', {'categories': categories})
 
 def category_products_view(request, slug):
@@ -80,7 +94,6 @@ def category_products_view(request, slug):
         'products': products,
     })
 
-@login_required
 def product_create_view(request):
     if request.user.user_type != 'SELLER':
         messages.error(request, 'Only sellers can create products.')
@@ -99,7 +112,6 @@ def product_create_view(request):
     
     return render(request, 'products/product_form.html', {'form': form, 'action': 'Create'})
 
-@login_required
 def product_edit_view(request, slug):
     product = get_object_or_404(Product, slug=slug)
     
@@ -122,7 +134,6 @@ def product_edit_view(request, slug):
         'action': 'Edit'
     })
 
-@login_required
 def product_delete_view(request, slug):
     product = get_object_or_404(Product, slug=slug)
     
@@ -168,7 +179,6 @@ def product_filter_view(request):
     
     return render(request, 'products/product_filter.html', {'products': products})
 
-@login_required
 def add_review_view(request, slug):
     product = get_object_or_404(Product, slug=slug)
     
@@ -254,7 +264,10 @@ def add_to_cart(request, product_id):
             'message': 'Item added to cart successfully!'
         })
 
-    return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
+    return JsonResponse({
+        'status': 'login_required',
+        'redirect_url': reverse('accounts:login') + f'?next={request.path}'
+    })
 
 @login_required
 def update_cart(request, item_id):
@@ -314,223 +327,54 @@ def remove_from_cart(request, item_id):
     return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
 
 def category_detail(request, category_slug):
-    categories_data = {
-        'textile': {
-            'name': 'Textile-Based Handicrafts',
-            'description': 'Traditional textiles, embroidery, weaving, block printing, and fabric art',
-            'products': [
-                {
-                    'id': 1,
-                    'name': 'Traditional Embroidered Shawl',
-                    'price': 2499.99,
-                    'description': 'Handcrafted embroidered shawl with traditional patterns',
-                    'is_available': True,
-                    'slug': 'traditional-embroidered-shawl',
-                },
-                {
-                    'id': 2,
-                    'name': 'Block Print Cotton Bedsheet',
-                    'price': 1899.99,
-                    'description': 'Hand block printed cotton bedsheet with ethnic designs',
-                    'is_available': True,
-                    'slug': 'block-print-bedsheet',
-                },
-                # Add 4 more products...
-            ]
-        },
-        'stone': {
-            'name': 'Stone Handicrafts',
-            'description': 'Exquisite stone carvings and sculptures',
-            'products': [
-                {
-                    'id': 1,
-                    'name': 'Marble Elephant Statue',
-                    'price': 4999.99,
-                    'description': 'Hand-carved marble elephant with intricate details',
-                    'is_available': True,
-                    'slug': 'marble-elephant',
-                },
-                {
-                    'id': 2,
-                    'name': 'Sandstone Wall Panel',
-                    'price': 3499.99,
-                    'description': 'Traditional sandstone wall panel with geometric patterns',
-                    'is_available': True,
-                    'slug': 'sandstone-panel',
-                },
-                # Add 4 more products...
-            ]
-        },
-        'jewelry': {
-            'name': 'Jewelry Handicrafts',
-            'description': 'Traditional handcrafted jewelry and accessories',
-            'products': [
-                {
-                    'id': 1,
-                    'name': 'Silver Filigree Necklace',
-                    'price': 3999.99,
-                    'description': 'Handcrafted silver filigree necklace with traditional design',
-                    'is_available': True,
-                    'slug': 'silver-filigree-necklace',
-                },
-                {
-                    'id': 2,
-                    'name': 'Tribal Brass Earrings',
-                    'price': 999.99,
-                    'description': 'Traditional tribal brass earrings with ethnic patterns',
-                    'is_available': True,
-                    'slug': 'tribal-brass-earrings',
-                },
-                # Add 4 more products...
-            ]
-        },
-        'metal': {
-            'name': 'Metal Handicrafts',
-            'description': 'Traditional metalwork and decorative items',
-            'products': [
-                {
-                    'id': 1,
-                    'name': 'Brass Buddha Statue',
-                    'price': 5999.99,
-                    'description': 'Hand-crafted brass Buddha statue with antique finish',
-                    'is_available': True,
-                    'slug': 'brass-buddha',
-                },
-                {
-                    'id': 2,
-                    'name': 'Copper Wall Hanging',
-                    'price': 2499.99,
-                    'description': 'Traditional copper wall hanging with peacock design',
-                    'is_available': True,
-                    'slug': 'copper-wall-hanging',
-                },
-                # Add 4 more products...
-            ]
-        },
-        'ceramic': {
-            'name': 'Clay & Ceramic Handicrafts',
-            'description': 'Traditional pottery, terracotta, and ceramic art pieces',
-            'products': [
-                {
-                    'id': 1,
-                    'name': 'Blue Pottery Vase',
-                    'price': 1999.99,
-                    'description': 'Traditional blue pottery vase with hand-painted floral designs',
-                    'is_available': True,
-                    'slug': 'blue-pottery-vase',
-                },
-                {
-                    'id': 2,
-                    'name': 'Terracotta Wall Plates',
-                    'price': 1499.99,
-                    'description': 'Set of decorative terracotta wall plates with traditional motifs',
-                    'is_available': True,
-                    'slug': 'terracotta-wall-plates',
-                },
-                {
-                    'id': 3,
-                    'name': 'Ceramic Tea Set',
-                    'price': 2499.99,
-                    'description': 'Handcrafted ceramic tea set with intricate patterns',
-                    'is_available': True,
-                    'slug': 'ceramic-tea-set',
-                },
-                {
-                    'id': 4,
-                    'name': 'Clay Wind Chimes',
-                    'price': 899.99,
-                    'description': 'Traditional clay wind chimes with bell designs',
-                    'is_available': True,
-                    'slug': 'clay-wind-chimes',
-                },
-                {
-                    'id': 5,
-                    'name': 'Ceramic Incense Holder',
-                    'price': 599.99,
-                    'description': 'Handmade ceramic incense holder with glazed finish',
-                    'is_available': True,
-                    'slug': 'ceramic-incense-holder',
-                },
-                {
-                    'id': 6,
-                    'name': 'Pottery Garden Planters',
-                    'price': 1299.99,
-                    'description': 'Set of hand-thrown pottery planters for garden decor',
-                    'is_available': True,
-                    'slug': 'pottery-garden-planters',
-                },
-            ]
-        },
-        'wood': {
-            'name': 'Wood & Bamboo Handicrafts',
-            'description': 'Exquisite wooden carvings, bamboo crafts, and furniture pieces',
-            'products': [
-                {
-                    'id': 1,
-                    'name': 'Carved Wooden Box',
-                    'price': 2999.99,
-                    'description': 'Hand-carved wooden jewelry box with traditional designs',
-                    'is_available': True,
-                    'slug': 'carved-wooden-box',
-                },
-                {
-                    'id': 2,
-                    'name': 'Bamboo Table Lamp',
-                    'price': 1799.99,
-                    'description': 'Eco-friendly bamboo table lamp with woven shade',
-                    'is_available': True,
-                    'slug': 'bamboo-table-lamp',
-                },
-                {
-                    'id': 3,
-                    'name': 'Wooden Wall Mask',
-                    'price': 3499.99,
-                    'description': 'Traditional wooden tribal mask for wall decoration',
-                    'is_available': True,
-                    'slug': 'wooden-wall-mask',
-                },
-                {
-                    'id': 4,
-                    'name': 'Bamboo Storage Baskets',
-                    'price': 999.99,
-                    'description': 'Set of handwoven bamboo storage baskets',
-                    'is_available': True,
-                    'slug': 'bamboo-storage-baskets',
-                },
-                {
-                    'id': 5,
-                    'name': 'Wooden Photo Frame',
-                    'price': 1299.99,
-                    'description': 'Hand-carved wooden photo frame with floral patterns',
-                    'is_available': True,
-                    'slug': 'wooden-photo-frame',
-                },
-                {
-                    'id': 6,
-                    'name': 'Bamboo Wind Chimes',
-                    'price': 799.99,
-                    'description': 'Natural bamboo wind chimes with wooden beads',
-                    'is_available': True,
-                    'slug': 'bamboo-wind-chimes',
-                },
-            ]
-        },
-        # Add more categories...
-    }
-
-    # Get category data
-    category_data = categories_data.get(category_slug)
+    category = get_object_or_404(Category, slug=category_slug)
+    products = Product.objects.filter(category=category, is_active=True)
     
-    if not category_data:
-        # Handle 404 with a proper template
-        return render(request, '404.html', status=404)
-
     context = {
-        'category': {
-            'name': category_data['name'],
-            'description': category_data['description'],
-        },
-        'products': category_data['products']
+        'category': category,
+        'products': products
     }
     
     return render(request, 'products/category_detail.html', context)
+
+@login_required
+def checkout_view(request):
+    # Get the user's cart
+    cart = Cart.objects.get_or_create(user=request.user)[0]
+    
+    # Check if cart is empty
+    if not cart.items.exists():
+        messages.warning(request, 'Your cart is empty.')
+        return redirect('products:cart')
+        
+    context = {
+        'cart': cart,
+    }
+    return render(request, 'products/checkout.html', context)
+
+@login_required
+def add_to_wishlist(request, product_id):
+    if request.method == 'POST':
+        product = get_object_or_404(Product, id=product_id)
+        
+        # Check if user has a wishlist, create if not
+        wishlist, created = Wishlist.objects.get_or_create(user=request.user)
+        
+        # Add product to wishlist if not already there
+        if product not in wishlist.products.all():
+            wishlist.products.add(product)
+            return JsonResponse({
+                'status': 'success',
+                'message': 'Added to your wishlist!'
+            })
+        else:
+            # Product already in wishlist
+            return JsonResponse({
+                'status': 'error',
+                'message': 'This item is already in your wishlist!'
+            })
+    
+    return JsonResponse({
+        'status': 'error',
+        'message': 'Invalid request method'
+    })
